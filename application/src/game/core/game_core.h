@@ -72,3 +72,5 @@ void rotationDeplacement(Player* self, int direction);
 void rotationBouclier(Player* self);
 
 bool rotationBouclierIsValid(Player* self, GameCore* core);
+
+bool tryMove(int direction, GameCore* self);

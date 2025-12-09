@@ -93,13 +93,6 @@ void Scene_update(Scene* self)
     {
         g_drawUIGizmos = !g_drawUIGizmos;
     }
-
-    if (self->m_input->mouse.leftPressed)
-    {
-        int direction = Get_Move(self);
-        MovePlayer(direction, self->m_gameCore);
-    }
-
     if (self->m_state == SCENE_STATE_FADING_IN)
     {
         self->m_accu += Timer_getUnscaledDelta(g_time);
@@ -132,7 +125,6 @@ void Scene_quit(Scene* self)
 void Scene_render(Scene* self)
 {
     assert(self && "The Scene must be created");
-    Grid_Render(self->m_gameCore->board);
     // Efface le rendu précédent
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
@@ -169,7 +161,8 @@ void Scene_drawGizmos(Scene* self)
 
 int Get_Move(Scene* scene)
 {
-    Vec2 RelativeMousePosition = Vec2_sub(scene->m_gameCore->m_playerPosition, scene->m_input->mouse.position);
+    Vec2 SelectedCase = Vec2_set(scene->m_gameGraphics->m_selectedColIndex, scene->m_gameGraphics->m_selectedRowIndex);
+    Vec2 RelativeMousePosition = Vec2_sub(scene->m_gameCore->m_playerPosition, SelectedCase);
     if (max(RelativeMousePosition.x, RelativeMousePosition.y) == abs(RelativeMousePosition.x))
     {
         if (RelativeMousePosition.x > 0)
