@@ -55,12 +55,12 @@ typedef struct Player
     int face4;
     int face5;
     int face6;
-};
+} Player;
 
 GameCore* GameCore_init();
 
 int** Board_create();
 
-void Grid_Render(int* grid);
+void Grid_Render(int** grid);
 
-int Get_Move(Scene* scene);
+//void MovePlayer(Scene* scene);

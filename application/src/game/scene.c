@@ -94,11 +94,6 @@ void Scene_update(Scene* self)
         g_drawUIGizmos = !g_drawUIGizmos;
     }
 
-    if (self->m_input->mouse.leftPressed)
-    {
-
-    }
-
     if (self->m_state == SCENE_STATE_FADING_IN)
     {
         self->m_accu += Timer_getUnscaledDelta(g_time);
@@ -164,4 +159,31 @@ void Scene_render(Scene* self)
 void Scene_drawGizmos(Scene* self)
 {
     assert(self && "The Scene must be created");
+}
+
+int Get_Move(Scene* scene)
+{
+    Vec2 RelativeMousePosition = Vec2_sub(scene->m_gameCore->m_playerPosition, scene->m_input->mouse.position);
+    if (max(RelativeMousePosition.x, RelativeMousePosition.y) == abs(RelativeMousePosition.x))
+    {
+        if (RelativeMousePosition.x > 0)
+        {
+            return(DROITE);
+        }
+        else
+        {
+            return(GAUCHE);
+        }
+    }
+    else
+    {
+        if (RelativeMousePosition.y > 0)
+        {
+            return(HAUT);
+        }
+        else
+        {
+            return(BAS);
+        }
+    }
 }

@@ -58,6 +58,8 @@ void Scene_render(Scene* self);
 /// @param self la scène.
 void Scene_drawGizmos(Scene* self);
 
+int Get_Move(Scene* scene);
+
 /// @brief Renvoie le gestionnaire des assets de la scène.
 /// @param self la scène.
 /// @return Le gestionnaire des assets de la scène.
