@@ -15,6 +15,19 @@ GameCore* GameCore_init()
     self->m_playerPosition = Vec2_set(2, 1);
 }
 
+Player* playerInit()
+{
+    Player* cube = calloc(1, sizeof(Player));
+    cube->facePorte = VISAGE;
+    cube->faceCiel = TETE;
+    cube->faceOppPorte = DOS;
+    cube->faceTerre = CREUX_CLE;
+    cube->faceGauchePorte = CREUX_HACHE;
+    cube->faceDroitePorte = BOUCLIER;
+
+    return cube;
+}
+
 int** Board_create()
 {
     int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
@@ -53,4 +66,5 @@ void MovePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.y)+1][(int)(PlayerPos.x)] = PLAYER;
     }
     self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)];
+    p
 }
