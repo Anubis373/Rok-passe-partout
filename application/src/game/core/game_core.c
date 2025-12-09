@@ -62,7 +62,7 @@ void Grid_Render(int** board)
 void MovePlayer(int direction, GameCore* self)
 {
     Vec2 PlayerPos = self->m_playerPosition;
-    if (!tryMove(direction, self)) return;
+    rotationDeplacement(self->player, direction);
     if (direction == HAUT)
     {
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
@@ -97,34 +97,90 @@ bool tryMove(int direction, GameCore* self)
     {
     case HAUT:
         if (self->m_playerPosition.x == 0) return false;
-        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == CRATE) return false;
-        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == PILLAR) return false;
-        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == MONSTER) return false;
-        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == CRYSTAL)
+        switch (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y])
         {
+        case CRATE:
+            return false;
+        case PILLAR:
+            return false;
+        case MONSTER:
+            return false;
+        case CRYSTAL:
             if (self->player->facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
+            return true;
+        case KEY:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            self->CleCollected = true;
+            return(true);
+        default:
+            return true;
         }
-        return true;
-    case BAS:
-        if (self->m_playerPosition.x == GAME_GRID_SIZE_Y-1) return false;
-        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == CRATE) return false;
-        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == PILLAR) return false;
-        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == MONSTER) return false;
-        return true;
-    case DROITE:
-        if (self->m_playerPosition.y == 0) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == CRATE) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == PILLAR) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == MONSTER) return false;
-        return true;
-    case GAUCHE:
-        if (self->m_playerPosition.y == GAME_GRID_SIZE_X - 1) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == CRATE) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == PILLAR) return false;
-        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == MONSTER) return false;
 
         return true;
+    case BAS:
+        if (self->m_playerPosition.x == GAME_GRID_SIZE_Y - 1) return false;
+        switch (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y])
+        {
+        case CRATE:
+            return false;
+        case PILLAR:
+            return false;
+        case MONSTER:
+            return false;
+        case CRYSTAL:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->CleCollected == true) return false;
+            return true;
+        case KEY:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            self->CleCollected = true;
+            return(true);
+        default:
+            return true;
+        }
+    case DROITE:
+        if (self->m_playerPosition.y == 0) return false;
+        switch (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1])
+        {
+        case CRATE:
+            return false;
+        case PILLAR:
+            return false;
+        case MONSTER:
+            return false;
+        case CRYSTAL:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->CleCollected == true) return false;
+            return true;
+        case KEY:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            self->CleCollected = true;
+            return(true);
+        default:
+            return true;
+        }
+    case GAUCHE:
+        if (self->m_playerPosition.y == GAME_GRID_SIZE_X - 1) return false;
+        switch (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1])
+        {
+        case CRATE:
+            return false;
+        case PILLAR:
+            return false;
+        case MONSTER:
+            return false;
+        case CRYSTAL:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->CleCollected == true) return false;
+            return true;
+        case KEY:
+            if (self->player->facePorte != CREUX_CLE) return false;
+            self->CleCollected = true;
+            return(true);
+        default:
+            return true;
+        }
     }
 }
 

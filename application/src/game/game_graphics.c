@@ -86,34 +86,35 @@ void GameGraphics_update(GameGraphics* self)
                 AABB* cellAABB = &(self->m_cells[i][j]);
                 if (AABB_containsPoint(cellAABB, mouseWorldPos))
                 {
+                    int direction = 0;
                     if (self->m_selectedRowIndex == i && self->m_selectedColIndex != j)
                     {
                         if (self->m_selectedColIndex < j)
                         {
-                            MovePlayer(GAUCHE, self->m_scene->m_gameCore);
+                            direction = GAUCHE;
                         }
                         else
                         {
-                            MovePlayer(DROITE, self->m_scene->m_gameCore);
+                            direction = DROITE;
                         }
                     }
                     if (self->m_selectedRowIndex != i && self->m_selectedColIndex == j)
                     {
                         if (self->m_selectedRowIndex < i)
                         {
-                            MovePlayer(BAS, self->m_scene->m_gameCore);
+                            direction = BAS;
                         }
                         else
                         {
-                            MovePlayer(HAUT, self->m_scene->m_gameCore);
+                            direction = HAUT;
                         }
                     }
-
-
-                    self->m_selectedRowIndex = i;
-                    self->m_selectedColIndex = j;
-
-
+                    if (tryMove(direction, self->m_scene->m_gameCore))
+                    {
+                        self->m_selectedRowIndex = i;
+                        self->m_selectedColIndex = j;
+                        MovePlayer(direction, self->m_scene->m_gameCore);
+                    }
                 }
             }
         }
