@@ -94,6 +94,12 @@ void Scene_update(Scene* self)
         g_drawUIGizmos = !g_drawUIGizmos;
     }
 
+    if (self->m_input->mouse.leftPressed)
+    {
+        int direction = Get_Move(self);
+        MovePlayer(direction, self->m_gameCore);
+    }
+
     if (self->m_state == SCENE_STATE_FADING_IN)
     {
         self->m_accu += Timer_getUnscaledDelta(g_time);

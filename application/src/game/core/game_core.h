@@ -57,12 +57,12 @@ typedef struct Player
     int faceDroitePorte;
 }Player;
 
-GameCore GameCore_init();
+GameCore* GameCore_init();
 
 Player* playerInit();
 
-int Board_create();
+int** Board_create();
 
-void Grid_Render(int grid);
+void Grid_Render(int** grid);
 
 void MovePlayer(int direction, GameCore* self);
