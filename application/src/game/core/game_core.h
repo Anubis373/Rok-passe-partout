@@ -66,3 +66,5 @@ int** Board_create();
 void Grid_Render(int** grid);
 
 void MovePlayer(int direction, GameCore* self);
+
+bool tryMove(int direction, GameCore* self);

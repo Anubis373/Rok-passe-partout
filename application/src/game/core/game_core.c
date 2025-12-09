@@ -10,8 +10,9 @@ GameCore* GameCore_init()
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
     AssertNew(self);
     self->board = Board_create();
-    return(self);
     self->m_playerPosition = Vec2_set(2, 1);
+
+    return(self);
 }
 
 Player* playerInit()
@@ -58,9 +59,50 @@ void Grid_Render(int** board)
 void MovePlayer(int direction, GameCore* self)
 {
     Vec2 PlayerPos = self->m_playerPosition;
+    if (!tryMove(direction, self)) return;
     if (direction == HAUT)
     {
-        if (self->m_playerPosition.y == 0) return;
-        self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)] = VOID;
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
+        self->board[(int)(PlayerPos.x)-1][(int)(PlayerPos.y)] = PLAYER;
+        self->m_playerPosition = Vec2_add(PlayerPos, Vec2_left);
+    }
+    if (direction == BAS)
+    {
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
+        self->board[(int)(PlayerPos.x) + 1][(int)(PlayerPos.y)] = PLAYER;
+        self->m_playerPosition = Vec2_add(PlayerPos, Vec2_right);
+    }
+    if (direction == GAUCHE)
+    {
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
+        self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
+    }
+    if (direction == DROITE)
+    {
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)-1] = PLAYER;
+        self->m_playerPosition = Vec2_add(PlayerPos, Vec2_down);
+    }
+    Grid_Render(self->board);
+    printf("%f %f", self->m_playerPosition.x, self->m_playerPosition.y);
+}
+
+bool tryMove(int direction, GameCore* self)
+{
+    switch (direction)
+    {
+    case HAUT:
+        if (self->m_playerPosition.x == 0) return false;
+        return true;
+    case BAS:
+        if (self->m_playerPosition.x == GAME_GRID_SIZE_Y-1) return false;
+        return true;
+    case DROITE:
+        if (self->m_playerPosition.y == 0) return false;
+        return true;
+    case GAUCHE:
+        if (self->m_playerPosition.y == GAME_GRID_SIZE_X - 1) return false;
+        return true;
     }
 }

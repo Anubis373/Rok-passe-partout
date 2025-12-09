@@ -1,4 +1,4 @@
-/*
+ /*
     Copyright (c) Arnaud BANNIER, Nicolas BODIN.
     Licensed under the MIT License.
     See LICENSE.md in the project root for license information.
@@ -86,8 +86,34 @@ void GameGraphics_update(GameGraphics* self)
                 AABB* cellAABB = &(self->m_cells[i][j]);
                 if (AABB_containsPoint(cellAABB, mouseWorldPos))
                 {
+                    if (self->m_selectedRowIndex == i && self->m_selectedColIndex != j)
+                    {
+                        if (self->m_selectedColIndex < j)
+                        {
+                            MovePlayer(GAUCHE, self->m_scene->m_gameCore);
+                        }
+                        else
+                        {
+                            MovePlayer(DROITE, self->m_scene->m_gameCore);
+                        }
+                    }
+                    if (self->m_selectedRowIndex != i && self->m_selectedColIndex == j)
+                    {
+                        if (self->m_selectedRowIndex < i)
+                        {
+                            MovePlayer(BAS, self->m_scene->m_gameCore);
+                        }
+                        else
+                        {
+                            MovePlayer(HAUT, self->m_scene->m_gameCore);
+                        }
+                    }
+
+
                     self->m_selectedRowIndex = i;
                     self->m_selectedColIndex = j;
+
+
                 }
             }
         }
