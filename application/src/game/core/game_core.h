@@ -49,18 +49,20 @@ enum Direction
 
 typedef struct Player
 {
-    int face1;
-    int face2;
-    int face3;
-    int face4;
-    int face5;
-    int face6;
-};
+    int facePorte;
+    int faceCiel;
+    int faceOppPorte;
+    int faceTerre;
+    int faceGauchePorte;
+    int faceDroitePorte;
+}Player;
 
-GameCore* GameCore_init();
+GameCore GameCore_init();
 
-int** Board_create();
+Player* playerInit();
 
-void Grid_Render(int* grid);
+int Board_create();
 
-int Get_Move(Scene* scene);
+void Grid_Render(int grid);
+
+void MovePlayer(int direction, GameCore* self);
