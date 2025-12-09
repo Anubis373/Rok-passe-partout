@@ -12,6 +12,7 @@ GameCore* GameCore_init()
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
     self->player = playerInit();
+    self->CleCollected = 0;
     return(self);
 }
 
@@ -87,7 +88,7 @@ void MovePlayer(int direction, GameCore* self)
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_down);
     }
     Grid_Render(self->board);
-    printf("%f %f", self->m_playerPosition.x, self->m_playerPosition.y);
+    soltion(self->player, self);
 }
 
 bool tryMove(int direction, GameCore* self)
@@ -201,4 +202,17 @@ void rotationBouclier(Player* self, GameCore* core)
         self->faceOppPorte = self->faceDroitePorte;
         self->faceDroitePorte = tmp;
     }
+}
+
+bool soltion(Player* self, GameCore* core)
+{
+    if (core->m_playerPosition.x != 0 || core->m_playerPosition.y != 2)
+        return false;
+    if (self->facePorte != VISAGE || self->faceTerre != CREUX_CLE)
+        return false;
+    if (!core->CleCollected)
+        return false;
+    printf("GAGNE, WOHOOOO");
+    return true;
+    
 }

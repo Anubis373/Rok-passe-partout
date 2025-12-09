@@ -78,4 +78,4 @@ bool rotationBouclierIsValid(Player* self, GameCore* core);
 
 bool tryMove(int direction, GameCore* self);
 
-bool hasKey();
+bool soltion(Player* self, GameCore* core);
