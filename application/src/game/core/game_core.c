@@ -12,7 +12,7 @@ GameCore* GameCore_init()
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
     self->player = playerInit();
-    self->CleCollected = 0;
+    self->CleCollected = 1;
     return(self);
 }
 
@@ -232,16 +232,16 @@ bool rotationBouclierIsValid(Player* self, GameCore *core)
     int x = pos.x;
     int y = pos.y;
 
-    if (y > 0 && core->board[y - 1][x] == CRATE)
+    if (core->board[y - 1][x] == CRATE)
         return false;
 
-    if (y < GAME_GRID_SIZE_Y - 1 && core->board[y + 1][x] == CRATE)
+    if (core->board[y + 1][x] == CRATE)
         return false;
 
-    if (x > 0 && core->board[y][x - 1] == CRATE)
+    if (core->board[y][x - 1] == CRATE)
         return false;
 
-    if (x < GAME_GRID_SIZE_X - 1 && core->board[y][x + 1] == CRATE)
+    if (core->board[y][x + 1] == CRATE)
         return false;
 
     return true;
