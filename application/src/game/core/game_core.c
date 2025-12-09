@@ -5,8 +5,6 @@
 */
 
 #include "game_core.h"
-
-
 GameCore* GameCore_init()
 {
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
@@ -64,7 +62,5 @@ void MovePlayer(int direction, GameCore* self)
     {
         if (self->m_playerPosition.y == 0) return;
         self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)] = VOID;
-        self->board[(int)(PlayerPos.y) + 1][(int)(PlayerPos.x)] = PLAYER;
     }
-    self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)];
 }
