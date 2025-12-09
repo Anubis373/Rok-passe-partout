@@ -66,5 +66,5 @@ void MovePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.y)+1][(int)(PlayerPos.x)] = PLAYER;
     }
     self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)];
-    p
+    
 }
