@@ -11,13 +11,14 @@ GameCore* GameCore_init()
     AssertNew(self);
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
-
+    self->player = playerInit();
     return(self);
 }
 
 Player* playerInit()
 {
-    Player* cube = calloc(1, sizeof(Player));
+    Player* cube = (Player*)calloc(1, sizeof(Player));
+    AssertNew(cube)
     cube->facePorte = VISAGE;
     cube->faceCiel = TETE;
     cube->faceOppPorte = DOS;
@@ -37,6 +38,7 @@ int** Board_create()
     }
     board[1][1] = CRATE;
     board[2][1] = PLAYER;
+    board[0][3] = PILLAR;
     board[0][2] = 12;
     return(board);
 }
@@ -94,15 +96,33 @@ bool tryMove(int direction, GameCore* self)
     {
     case HAUT:
         if (self->m_playerPosition.x == 0) return false;
+        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == CRATE) return false;
+        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == PILLAR) return false;
+        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == MONSTER) return false;
+        if (self->board[(int)self->m_playerPosition.x - 1][(int)self->m_playerPosition.y] == CRYSTAL)
+        {
+            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->CleCollected == true) return false;
+        }
         return true;
     case BAS:
         if (self->m_playerPosition.x == GAME_GRID_SIZE_Y-1) return false;
+        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == CRATE) return false;
+        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == PILLAR) return false;
+        if (self->board[(int)self->m_playerPosition.x + 1][(int)self->m_playerPosition.y] == MONSTER) return false;
         return true;
     case DROITE:
         if (self->m_playerPosition.y == 0) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == CRATE) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == PILLAR) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y - 1] == MONSTER) return false;
         return true;
     case GAUCHE:
         if (self->m_playerPosition.y == GAME_GRID_SIZE_X - 1) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == CRATE) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == PILLAR) return false;
+        if (self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y + 1] == MONSTER) return false;
+
         return true;
     }
 }
