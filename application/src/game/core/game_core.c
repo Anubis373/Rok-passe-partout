@@ -64,3 +64,79 @@ void MovePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.y)][(int)(PlayerPos.x)] = VOID;
     }
 }
+
+void rotationDeplacement(Player* self, int direction)
+{
+    int tmp;
+    switch (direction)
+    {
+    case HAUT:
+        tmp = self->facePorte;
+        self->facePorte = self->faceCiel;
+        self->faceCiel = self->faceOppPorte;
+        self->faceOppPorte = self->faceTerre;
+        self->faceTerre = tmp;
+        break;
+    case BAS:
+        tmp = self->facePorte;
+        self->facePorte = self->faceTerre;
+        self->faceTerre = self->faceOppPorte;
+        self->faceOppPorte = self->faceCiel;
+        self->faceCiel = tmp;
+        break;
+    case DROITE:
+        tmp = self->faceDroitePorte;
+        self->faceDroitePorte = self->faceCiel;
+        self->faceCiel = self->faceGauchePorte;
+        self->faceGauchePorte = self->faceTerre;
+        self->faceTerre = tmp;
+        break;
+    case GAUCHE:
+        tmp = self->faceGauchePorte;
+        self->faceGauchePorte = self->faceCiel;
+        self->faceCiel = self->faceDroitePorte;
+        self->faceDroitePorte = self->faceTerre;
+        self->faceTerre = tmp;
+        break;
+    default:
+        break;
+    }
+}
+
+
+bool rotationBouclierIsValid(Player* self, GameCore *core)
+{
+    if (self->faceTerre != BOUCLIER)
+        return false;
+
+    Vec2 pos = core->m_playerPosition;
+    int x = pos.x;
+    int y = pos.y;
+
+    if (y > 0 && core->board[y - 1][x] == CRATE)
+        return false;
+
+    if (y < GAME_GRID_SIZE_Y - 1 && core->board[y + 1][x] == CRATE)
+        return false;
+
+    if (x > 0 && core->board[y][x - 1] == CRATE)
+        return false;
+
+    if (x < GAME_GRID_SIZE_X - 1 && core->board[y][x + 1] == CRATE)
+        return false;
+
+    return true;
+}
+
+void rotationBouclier(Player* self, GameCore* core)
+{
+    if (rotationBouclierIsValid(self, core))
+    {
+        int tmp;
+        tmp = self->facePorte;
+        self->facePorte = self->faceGauchePorte;
+        self->faceGauchePorte = self->faceOppPorte;
+        self->faceOppPorte = self->faceDroitePorte;
+        self->faceDroitePorte = tmp;
+    }
+}

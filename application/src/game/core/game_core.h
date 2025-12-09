@@ -66,3 +66,9 @@ int** Board_create();
 void Grid_Render(int** grid);
 
 void MovePlayer(int direction, GameCore* self);
+
+void rotationDeplacement(Player* self, int direction);
+
+void rotationBouclier(Player* self);
+
+bool rotationBouclierIsValid(Player* self, GameCore* core);
