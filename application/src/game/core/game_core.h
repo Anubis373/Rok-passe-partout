@@ -69,8 +69,10 @@ void MovePlayer(int direction, GameCore* self);
 
 void rotationDeplacement(Player* self, int direction);
 
-void rotationBouclier(Player* self);
+void rotationBouclier(Player* self, GameCore* core);
 
 bool rotationBouclierIsValid(Player* self, GameCore* core);
 
 bool tryMove(int direction, GameCore* self);
+
+bool hasKey();
