@@ -11,10 +11,22 @@
 #define GAME_GRID_SIZE_X 5
 #define GAME_GRID_SIZE_Y 4
 
+typedef struct Player
+{
+    int facePorte;
+    int faceCiel;
+    int faceOppPorte;
+    int faceTerre;
+    int faceGauchePorte;
+    int faceDroitePorte;
+}Player;
+
 typedef struct GameCore
 {
     int** board;
     Vec2 m_playerPosition;
+    Player* player;
+    bool CleCollected;
 } GameCore;
 
 enum GridElement
@@ -47,15 +59,6 @@ enum Direction
     DROITE = 3,
 };
 
-typedef struct Player
-{
-    int facePorte;
-    int faceCiel;
-    int faceOppPorte;
-    int faceTerre;
-    int faceGauchePorte;
-    int faceDroitePorte;
-}Player;
 
 GameCore* GameCore_init();
 
