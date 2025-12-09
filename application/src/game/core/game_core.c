@@ -41,6 +41,7 @@ int** Board_create()
     board[2][1] = PLAYER;
     board[0][3] = PILLAR;
     board[0][2] = 12;
+    board[2][2] = CRYSTAL;
     return(board);
 }
 
@@ -88,6 +89,9 @@ void MovePlayer(int direction, GameCore* self)
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_down);
     }
     Grid_Render(self->board);
+    printf("%d\n", self->player->facePorte);
+    printf("%d %d %d\n", self->player->faceGauchePorte, self->player->faceOppPorte, self->player->faceDroitePorte);
+    printf("%d", self->player->faceTerre);
     soltion(self->player, self);
 }
 
@@ -108,6 +112,7 @@ bool tryMove(int direction, GameCore* self)
         case CRYSTAL:
             if (self->player->facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
+            self->crystalUnder = true;
             return true;
         case KEY:
             if (self->player->facePorte != CREUX_CLE) return false;
@@ -131,6 +136,7 @@ bool tryMove(int direction, GameCore* self)
         case CRYSTAL:
             if (self->player->facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
+            self->crystalUnder = true;
             return true;
         case KEY:
             if (self->player->facePorte != CREUX_CLE) return false;
@@ -152,6 +158,7 @@ bool tryMove(int direction, GameCore* self)
         case CRYSTAL:
             if (self->player->facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
+            self->crystalUnder = true;
             return true;
         case KEY:
             if (self->player->facePorte != CREUX_CLE) return false;
@@ -173,6 +180,7 @@ bool tryMove(int direction, GameCore* self)
         case CRYSTAL:
             if (self->player->facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
+            self->crystalUnder = true;
             return true;
         case KEY:
             if (self->player->facePorte != CREUX_CLE) return false;
@@ -231,17 +239,16 @@ bool rotationBouclierIsValid(Player* self, GameCore *core)
     Vec2 pos = core->m_playerPosition;
     int x = pos.x;
     int y = pos.y;
-
-    if (y > 0 && core->board[y - 1][x] == CRATE)
+    if (core->board[y - 1][x] == CRATE)
         return false;
 
-    if (y < GAME_GRID_SIZE_Y - 1 && core->board[y + 1][x] == CRATE)
+    if (core->board[y + 1][x] == CRATE)
         return false;
 
-    if (x > 0 && core->board[y][x - 1] == CRATE)
+    if (core->board[y][x - 1] == CRATE)
         return false;
 
-    if (x < GAME_GRID_SIZE_X - 1 && core->board[y][x + 1] == CRATE)
+    if (core->board[y][x + 1] == CRATE)
         return false;
 
     return true;

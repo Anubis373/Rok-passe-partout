@@ -77,6 +77,11 @@ void GameGraphics_update(GameGraphics* self)
         return;
     }
 
+    if (input->mouse.rightPressed)
+    {
+        rotationBouclier(self->m_scene->m_gameCore->player, self->m_scene->m_gameCore);
+    }
+
     if (input->mouse.leftPressed)
     {
         for (int i = 0; i < GAME_GRID_SIZE; i++)

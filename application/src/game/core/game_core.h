@@ -27,6 +27,7 @@ typedef struct GameCore
     Vec2 m_playerPosition;
     Player* player;
     bool CleCollected;
+    bool crystalUnder;
 } GameCore;
 
 enum GridElement
