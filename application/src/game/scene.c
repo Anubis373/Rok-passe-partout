@@ -94,6 +94,11 @@ void Scene_update(Scene* self)
         g_drawUIGizmos = !g_drawUIGizmos;
     }
 
+    if (self->m_input->mouse.leftPressed)
+    {
+
+    }
+
     if (self->m_state == SCENE_STATE_FADING_IN)
     {
         self->m_accu += Timer_getUnscaledDelta(g_time);

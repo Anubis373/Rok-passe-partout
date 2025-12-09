@@ -5,6 +5,7 @@
 */
 
 #include "game_core.h"
+#include "game/scene.h"
 
 GameCore* GameCore_init()
 {
@@ -12,6 +13,7 @@ GameCore* GameCore_init()
     AssertNew(self);
     self->board = Board_create();
     return(self);
+    self->m_playerPosition = Vec2_set(2, 1);
 }
 
 int** Board_create()
@@ -41,4 +43,29 @@ void Grid_Render(int** board)
     printf("\n\n");
 }
 
-
+int Get_Move(Scene* scene)
+{
+    Vec2 RelativeMousePosition = Vec2_sub(scene->m_gameCore->m_playerPosition, scene->m_input->mouse.position);
+    if (max(RelativeMousePosition.x, RelativeMousePosition.y) == abs(RelativeMousePosition.x))
+    {
+        if (RelativeMousePosition.x > 0)
+        {
+            return(DROITE);
+        }
+        else
+        {
+            return(GAUCHE);
+        }
+    }
+    else
+    {
+        if (RelativeMousePosition.y > 0)
+        {
+            return(HAUT);
+        }
+        else
+        {
+            return(BAS);
+        }
+    }
+}

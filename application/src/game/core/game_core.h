@@ -14,6 +14,7 @@
 typedef struct GameCore
 {
     int** board;
+    Vec2 m_playerPosition;
 } GameCore;
 
 enum GridElement
@@ -38,6 +39,13 @@ enum PlayerFace
     TETE = 6,
 };
 
+enum Direction
+{
+    HAUT = 0,
+    BAS = 1,
+    GAUCHE = 2,
+    DROITE = 3,
+};
 
 typedef struct Player
 {
@@ -54,3 +62,5 @@ GameCore* GameCore_init();
 int** Board_create();
 
 void Grid_Render(int* grid);
+
+int Get_Move(Scene* scene);
