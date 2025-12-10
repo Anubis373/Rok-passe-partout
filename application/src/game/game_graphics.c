@@ -20,8 +20,8 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_padding = Vec2_set(0.0f, 0.0f);
     self->m_spacing = Vec2_set(0.1f, 0.1f);
     //
-    self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(8.0f, 4.5f));
-    self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(8.0f, 4.5f));
+    self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(6.0f, 4.5f));
+    self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(6.0f, 4.5f));
     //
     self->m_enabled = false;
 
@@ -126,11 +126,11 @@ void GameGraphics_update(GameGraphics* self)
                     {
                         if (self->m_selectedColIndex < j)
                         {
-                            direction = GAUCHE;
+                            direction = DROITE;
                         }
                         else
                         {
-                            direction = DROITE;
+                            direction = GAUCHE;
                         }
                     }
                     if (self->m_selectedRowIndex != i && self->m_selectedColIndex == j)
