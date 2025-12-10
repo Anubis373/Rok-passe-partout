@@ -19,9 +19,17 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_scene = scene;
     self->m_padding = Vec2_set(0.0f, 0.0f);
     self->m_spacing = Vec2_set(0.1f, 0.1f);
-    self->m_gridAABB.lower = Vec2_add(Vec2_set(-4.f, -4.f), Vec2_set(8.0f, 4.5f));
-    self->m_gridAABB.upper = Vec2_add(Vec2_set(+4.f, +4.f), Vec2_set(8.0f, 4.5f));
+    //
+    self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(8.0f, 4.5f));
+    self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(8.0f, 4.5f));
+    //
     self->m_enabled = false;
+
+    // Initialiser la position sélectionnée avec la position du joueur
+    Vec2 playerPos = scene->m_gameCore->m_playerPosition;
+    self->m_selectedRowIndex = (int)playerPos.x;
+    self->m_selectedColIndex = (int)playerPos.y;
+    //
 
     AssetManager* assets = Scene_getAssetManager(scene);
     SpriteSheet* spriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_GAME);
@@ -38,27 +46,30 @@ void GameGraphics_destroy(GameGraphics* self)
     free(self);
 }
 
+//
 static void GameGraphics_updateCells(GameGraphics* self)
 {
     float totalPaddingX = self->m_padding.x * 2.f;
     float totalPaddingY = self->m_padding.y * 2.f;
-    float totalSpacingX = self->m_spacing.x * (GAME_GRID_SIZE - 1);
-    float totalSpacingY = self->m_spacing.y * (GAME_GRID_SIZE - 1);
+    float totalSpacingX = self->m_spacing.x * (GAME_GRID_SIZE_X - 1);
+    float totalSpacingY = self->m_spacing.y * (GAME_GRID_SIZE_Y - 1);
     Vec2 gridSize = AABB_getSize(&(self->m_gridAABB));
-    float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / GAME_GRID_SIZE;
-    float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / GAME_GRID_SIZE;
+    float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / GAME_GRID_SIZE_X;
+    float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / GAME_GRID_SIZE_Y;
 
-    for (int i = 0; i < GAME_GRID_SIZE; i++)
+    for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
-        for (int j = 0; j < GAME_GRID_SIZE; j++)
+        for (int j = 0; j < GAME_GRID_SIZE_X; j++)
         {
             float cellX = self->m_gridAABB.lower.x + self->m_padding.x + j * (cellW + self->m_spacing.x);
             float cellY = self->m_gridAABB.lower.y + self->m_padding.y + i * (cellH + self->m_spacing.y);
-            self->m_cells[GAME_GRID_SIZE - 1 - i][j].lower = Vec2_set(cellX, cellY);
-            self->m_cells[GAME_GRID_SIZE - 1 - i][j].upper = Vec2_set(cellX + cellW, cellY + cellH);
+            self->m_cells[GAME_GRID_SIZE_Y - 1 - i][j].lower = Vec2_set(cellX, cellY);
+            self->m_cells[GAME_GRID_SIZE_Y - 1 - i][j].upper = Vec2_set(cellX + cellW, cellY + cellH);
         }
     }
 }
+//
+
 
 void GameGraphics_update(GameGraphics* self)
 {
@@ -79,9 +90,11 @@ void GameGraphics_update(GameGraphics* self)
 
     if (input->mouse.leftPressed)
     {
-        for (int i = 0; i < GAME_GRID_SIZE; i++)
+        //for (int i = 0; i < GAME_GRID_SIZE; i++)
+        for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
         {
-            for (int j = 0; j < GAME_GRID_SIZE; j++)
+            //for (int j = 0; j < GAME_GRID_SIZE; j++)
+            for (int j = 0; j < GAME_GRID_SIZE_X; j++)
             {
                 AABB* cellAABB = &(self->m_cells[i][j]);
                 if (AABB_containsPoint(cellAABB, mouseWorldPos))
@@ -130,9 +143,9 @@ void GameGraphics_render(GameGraphics* self)
     float scale = Camera_getWorldToViewScale(camera);
 
     SDL_FRect rect = { 0 };
-    for (int i = 0; i < GAME_GRID_SIZE; i++)
+    for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
-        for (int j = 0; j < GAME_GRID_SIZE; j++)
+        for (int j = 0; j < GAME_GRID_SIZE_X; j++)
         {
             AABB* cellAABB = &(self->m_cells[i][j]);
             rect.x = Camera_worldToViewX(camera, cellAABB->lower.x);
