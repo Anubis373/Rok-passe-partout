@@ -31,6 +31,21 @@ typedef struct GameCore
     bool crystalUnder;
 } GameCore;
 
+typedef struct GameHashmapEntry
+{
+    GameCore prevState;
+    GameCore currState;
+} GameHashmapEntry;
+
+typedef struct GameHashmap
+{
+    GameHashmapEntry* m_entries;
+    size_t* m_idMap;
+    size_t m_capacity;
+    size_t m_size;
+} GameHashmap;
+
+
 enum GridElement
 {
     VOID = 0,
@@ -81,3 +96,11 @@ bool rotationBouclierIsValid(Player* self, GameCore* core);
 bool tryMove(int direction, GameCore* self);
 
 bool soltion(Player* self, GameCore* core);
+
+bool gameCore_equals(GameCore* plateau1, GameCore* plateau2);
+
+bool gameCore_hashContains(GameHashmap* map, GameCore* state);
+
+void gameCore_hashInsert(GameHashmap* map, GameCore* state);
+
+void gameCore_resolution();
