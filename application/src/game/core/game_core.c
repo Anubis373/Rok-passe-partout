@@ -90,8 +90,8 @@ void MovePlayer(int direction, GameCore* self)
     }
     Grid_Render(self->board);
     printf("%d\n", self->player->facePorte);
-    printf("%d %d %d\n", self->player->faceGauchePorte, self->player->faceOppPorte, self->player->faceDroitePorte);
-    printf("%d", self->player->faceTerre);
+    printf("%d %d %d\n", self->player->faceGauchePorte, self->player->faceCiel, self->player->faceDroitePorte);
+    printf("%d\n", self->player->faceOppPorte);
     soltion(self->player, self);
 }
 
@@ -211,14 +211,14 @@ void rotationDeplacement(Player* self, int direction)
         self->faceOppPorte = self->faceCiel;
         self->faceCiel = tmp;
         break;
-    case DROITE:
-        tmp = self->faceDroitePorte;
+    case GAUCHE:
+tmp = self->faceDroitePorte;
         self->faceDroitePorte = self->faceCiel;
         self->faceCiel = self->faceGauchePorte;
         self->faceGauchePorte = self->faceTerre;
-        self->faceTerre = tmp;
+        self->faceTerre = tmp;        
         break;
-    case GAUCHE:
+    case DROITE:
         tmp = self->faceGauchePorte;
         self->faceGauchePorte = self->faceCiel;
         self->faceCiel = self->faceDroitePorte;
@@ -231,24 +231,25 @@ void rotationDeplacement(Player* self, int direction)
 }
 
 
-bool rotationBouclierIsValid(Player* self, GameCore *core)
+bool rotationBouclierIsValid(Player* self, GameCore* core)
 {
     if (self->faceTerre != BOUCLIER)
         return false;
 
     Vec2 pos = core->m_playerPosition;
-    int x = pos.x;
-    int y = pos.y;
-    if (core->board[y - 1][x] == CRATE)
+    int x = (int)pos.y;
+    int y = (int)pos.x;
+
+    if (y > 0 && core->board[y - 1][x] == CRATE)
         return false;
 
-    if (core->board[y + 1][x] == CRATE)
+    if (y < GAME_GRID_SIZE_Y - 1 && core->board[y + 1][x] == CRATE)
         return false;
 
-    if (core->board[y][x - 1] == CRATE)
+    if (x > 0 && core->board[y][x - 1] == CRATE)
         return false;
 
-    if (core->board[y][x + 1] == CRATE)
+    if (x < GAME_GRID_SIZE_X - 1 && core->board[y][x + 1] == CRATE)
         return false;
 
     return true;
@@ -266,8 +267,8 @@ void rotationBouclier(Player* self, GameCore* core)
         self->faceDroitePorte = tmp;
     }
     printf("%d\n", self->facePorte);
-    printf("%d %d %d\n", self->faceGauchePorte, self->faceOppPorte, self->faceDroitePorte);
-    printf("%d", self->faceTerre);
+    printf("%d %d %d\n", self->faceGauchePorte, self->faceCiel, self->faceDroitePorte);
+    printf("%d\n", self->faceOppPorte);
 }
 
 bool soltion(Player* self, GameCore* core)

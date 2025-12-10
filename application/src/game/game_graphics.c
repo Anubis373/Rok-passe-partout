@@ -106,10 +106,8 @@ void GameGraphics_update(GameGraphics* self)
 
     if (input->mouse.leftPressed)
     {
-        //for (int i = 0; i < GAME_GRID_SIZE; i++)
         for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
         {
-            //for (int j = 0; j < GAME_GRID_SIZE; j++)
             for (int j = 0; j < GAME_GRID_SIZE_X; j++)
             {
                 AABB* cellAABB = &(self->m_cells[i][j]);
