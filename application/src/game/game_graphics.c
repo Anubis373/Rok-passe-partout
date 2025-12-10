@@ -36,18 +36,22 @@ GameGraphics* GameGraphics_create(Scene* scene)
     SpriteSheet* crateSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRATE);
     SpriteSheet* pillarSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PILLAR);
     SpriteSheet* crystalSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRYSTAL);
+    SpriteSheet* demonSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_DEMON);
     AssertNew(spriteSheet);
     AssertNew(crateSpriteSheet);
     AssertNew(pillarSpriteSheet);
     AssertNew(crystalSpriteSheet);
+    AssertNew(demonSpriteSheet);
     self->m_spriteRabbit = SpriteSheet_getGroupByName(spriteSheet, "rabbit");
     self->m_spriteCrate = SpriteSheet_getGroupByName(crateSpriteSheet, "crate");
     self->m_spritePillar = SpriteSheet_getGroupByName(pillarSpriteSheet, "pillar");
     self->m_spriteCrystal = SpriteSheet_getGroupByName(crystalSpriteSheet, "crystal");
+    self->m_spriteDemon = SpriteSheet_getGroupByName(demonSpriteSheet, "demon");
     AssertNew(self->m_spriteCrate);
     AssertNew(self->m_spriteRabbit);
     AssertNew(self->m_spritePillar);
-
+    AssertNew(self->m_spriteCrystal);
+    AssertNew(self->m_spriteDemon);
     return self;
 }
 
@@ -184,6 +188,10 @@ void GameGraphics_render(GameGraphics* self)
             if (board[i][j] == CRYSTAL)
             {
                 SpriteGroup_render(self->m_spriteCrystal, 0, &rect, Vec2_anchor_north_west, 1.0f);
+            }
+            if (board[i][j] == MONSTER)
+            {
+                SpriteGroup_render(self->m_spriteDemon, 0, &rect, Vec2_anchor_north_west, 1.0f);
             }
 
             if (isSelected)

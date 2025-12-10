@@ -27,6 +27,10 @@ void Game_addAssets(AssetManager* assets)
         assets, SPRITE_CRYSTAL, "atlas/crystal", "atlas/crystal_desc"
     );
 
+    AssetManager_addSpriteSheet(
+        assets, SPRITE_DEMON, "atlas/demon", "atlas/demon_desc"
+    );
+
     // -------------------------------------------------------------------------
     // Fonts
 

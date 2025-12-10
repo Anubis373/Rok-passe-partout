@@ -42,6 +42,7 @@ int** Board_create()
     board[0][3] = PILLAR;
     board[0][2] = 12;
     board[2][2] = CRYSTAL;
+    board[3][3] = MONSTER;
     return(board);
 }
 
