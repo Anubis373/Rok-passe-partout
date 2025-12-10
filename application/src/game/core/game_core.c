@@ -339,3 +339,111 @@ bool soltion(Player* self, GameCore* core)
 }
 
 
+GameHashmap* gamehashmap_Create(int capacity)
+{
+    GameHashmap* hashMap = calloc(1, sizeof(GameHashmap));
+    assert(capacity > 0);
+    assert(hashMap);
+    hashMap->m_capacity = capacity;
+    hashMap->m_entries = calloc(capacity, sizeof(GameHashmapEntry));
+    assert(hashMap->m_entries);
+    hashMap->m_size = 0;
+    hashMap->m_idMap = calloc(capacity, sizeof(size_t));
+    for (size_t i = 0; i < capacity; i++)
+    {
+        hashMap->m_idMap[i] = (size_t)-1;
+    }
+
+    return hashMap;
+}
+
+GameHashmapEntry *GameHashmapEntry_Create(GameCore currState, GameCore prevState)
+{
+    GameHashmapEntry *entrie = calloc(1, sizeof(GameHashmapEntry));
+
+    entrie->currState = currState;
+    entrie->prevState = prevState;
+
+    return entrie;
+}
+
+uint64_t gameCore_hash(GameCore *self)
+{
+    uint64_t hash = 0;
+
+    hash ^= (uint64_t)(self->m_playerPosition.x);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    hash ^= (uint64_t)(self->m_playerPosition.y);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    hash ^= (uint64_t)(self->CleCollected);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    hash ^= (uint64_t)(self->AxeCollected);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    hash ^= (uint64_t)(self->player->faceTerre);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    hash ^= (uint64_t)(self->player->facePorte);
+    hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
+
+    return hash;
+}
+
+
+bool gameCore_equals(GameCore* plateau1, GameCore* plateau2)
+{
+    if (plateau1->AxeCollected != plateau2->AxeCollected) return false;
+    if (plateau1->CleCollected != plateau2->CleCollected) return false;
+    if (plateau1->player->facePorte != plateau2->player->facePorte) return false;
+    if (plateau1->player->faceTerre != plateau2->player->faceTerre) return false;
+    if (plateau1->m_playerPosition.x != plateau2->m_playerPosition.x) return false;
+    if (plateau1->m_playerPosition.y != plateau2->m_playerPosition.y) return false;
+    return true;
+}
+
+bool gameCore_hashContains(GameHashmap* map, GameCore* state)
+{
+    uint64_t hash = gameCore_hash(state);
+    size_t idx = hash % map->m_capacity;
+
+    while (map->m_idMap[idx] != (size_t)-1)
+    {
+        size_t id = map->m_idMap[idx];
+        GameCore* stored = &map->m_entries[id].currState;
+
+        if (gameCore_equals(stored, state))
+            return true;
+
+        idx = (idx + 1) % map->m_capacity;
+    }
+    return false;
+}
+
+
+void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
+{
+    uint64_t hash = gameCore_hash(&curr);
+    size_t idx = hash % map->m_capacity;
+
+    while (map->m_idMap[idx] != (size_t)-1)
+    {
+        size_t id = map->m_idMap[idx];
+        if (gameCore_equals(&map->m_entries[id].currState, &curr))
+            return; // déjà présent
+        idx = (idx + 1) % map->m_capacity;
+    }
+
+    size_t id = map->m_size++;
+    map->m_entries[id].currState = curr;
+    map->m_entries[id].prevState = prev;
+    map->m_idMap[idx] = id;
+}
+
+
+void gameCore_resolution()
+{
+
+}
