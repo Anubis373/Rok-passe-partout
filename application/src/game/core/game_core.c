@@ -12,7 +12,8 @@ GameCore* GameCore_init()
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
     self->player = playerInit();
-    self->CleCollected = 1;
+    self->CleCollected = 0;
+    self->crystalUnder = 0;
     return(self);
 }
 
@@ -40,7 +41,7 @@ int** Board_create()
     board[0][0] = CRATE;
     board[2][1] = PLAYER;
     board[0][3] = PILLAR;
-    board[0][2] = 12;
+    board[0][2] = KEY;
     board[2][2] = CRYSTAL;
     board[3][3] = MONSTER;
     return(board);
@@ -64,28 +65,28 @@ void Grid_Render(int** board)
 void MovePlayer(int direction, GameCore* self)
 {
     Vec2 PlayerPos = self->m_playerPosition;
+    if (self->board[(int)PlayerPos.x][(int)PlayerPos.y] != CRYSTAL)
+    {
+        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
+    }
     rotationDeplacement(self->player, direction);
     if (direction == HAUT)
     {
-        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
         self->board[(int)(PlayerPos.x)-1][(int)(PlayerPos.y)] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_left);
     }
     if (direction == BAS)
     {
-        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
         self->board[(int)(PlayerPos.x) + 1][(int)(PlayerPos.y)] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_right);
     }
     if (direction == GAUCHE)
     {
-        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
     }
     if (direction == DROITE)
     {
-        self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)-1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_down);
     }
@@ -98,6 +99,11 @@ void MovePlayer(int direction, GameCore* self)
 
 bool tryMove(int direction, GameCore* self)
 {
+    if (self->crystalUnder == true)
+    {
+        self->crystalUnder = false;
+        self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y] = CRYSTAL;
+    }
     switch (direction)
     {
     case HAUT:

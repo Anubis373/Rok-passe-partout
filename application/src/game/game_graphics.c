@@ -37,21 +37,25 @@ GameGraphics* GameGraphics_create(Scene* scene)
     SpriteSheet* pillarSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PILLAR);
     SpriteSheet* crystalSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRYSTAL);
     SpriteSheet* demonSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_DEMON);
+    SpriteSheet* keySpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_KEY);
     AssertNew(spriteSheet);
     AssertNew(crateSpriteSheet);
     AssertNew(pillarSpriteSheet);
     AssertNew(crystalSpriteSheet);
     AssertNew(demonSpriteSheet);
+    AssertNew(keySpriteSheet);
     self->m_spriteRabbit = SpriteSheet_getGroupByName(spriteSheet, "rabbit");
     self->m_spriteCrate = SpriteSheet_getGroupByName(crateSpriteSheet, "crate");
     self->m_spritePillar = SpriteSheet_getGroupByName(pillarSpriteSheet, "pillar");
     self->m_spriteCrystal = SpriteSheet_getGroupByName(crystalSpriteSheet, "crystal");
     self->m_spriteDemon = SpriteSheet_getGroupByName(demonSpriteSheet, "demon");
+    self->m_spriteKey = SpriteSheet_getGroupByName(keySpriteSheet, "key");
     AssertNew(self->m_spriteCrate);
     AssertNew(self->m_spriteRabbit);
     AssertNew(self->m_spritePillar);
     AssertNew(self->m_spriteCrystal);
     AssertNew(self->m_spriteDemon);
+    AssertNew(self->m_spriteKey);
     return self;
 }
 
@@ -177,21 +181,23 @@ void GameGraphics_render(GameGraphics* self)
             SDL_SetRenderDrawColor(g_renderer, color.r, color.g, color.b, 255);
             SDL_RenderFillRect(g_renderer, &rect);
 
-            if (board[i][j] == CRATE)
+            switch (board[i][j])
             {
+            case CRATE:
                 SpriteGroup_render(self->m_spriteCrate, 0, &rect, Vec2_anchor_north_west, 1.0f);
-            }
-            if (board[i][j] == PILLAR)
-            {
-                SpriteGroup_render(self->m_spritePillar, 0, &rect, Vec2_anchor_north_west, 1.0f);
-            }
-            if (board[i][j] == CRYSTAL)
-            {
+                break;
+            case CRYSTAL:
                 SpriteGroup_render(self->m_spriteCrystal, 0, &rect, Vec2_anchor_north_west, 1.0f);
-            }
-            if (board[i][j] == MONSTER)
-            {
+                break;
+            case MONSTER:
                 SpriteGroup_render(self->m_spriteDemon, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                break;
+            case PILLAR:
+                SpriteGroup_render(self->m_spritePillar, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                break;
+            case KEY:
+                SpriteGroup_render(self->m_spriteKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                break;
             }
 
             if (isSelected)
