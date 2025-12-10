@@ -32,6 +32,7 @@ typedef struct GameGraphics
     SpriteGroup* m_spriteCrate;
     SpriteGroup* m_spritePillar;
     SpriteGroup* m_spriteCrystal;
+    SpriteGroup* m_spriteDemon;
 
     bool m_enabled;
 } GameGraphics;
