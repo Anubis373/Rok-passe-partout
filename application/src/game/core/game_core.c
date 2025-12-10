@@ -37,7 +37,7 @@ int** Board_create()
     {
         board[i] = calloc(GAME_GRID_SIZE_X, sizeof(int));
     }
-    board[1][1] = CRATE;
+    board[0][0] = CRATE;
     board[2][1] = PLAYER;
     board[0][3] = PILLAR;
     board[0][2] = 12;
@@ -265,6 +265,9 @@ void rotationBouclier(Player* self, GameCore* core)
         self->faceOppPorte = self->faceDroitePorte;
         self->faceDroitePorte = tmp;
     }
+    printf("%d\n", self->facePorte);
+    printf("%d %d %d\n", self->faceGauchePorte, self->faceOppPorte, self->faceDroitePorte);
+    printf("%d", self->faceTerre);
 }
 
 bool soltion(Player* self, GameCore* core)
