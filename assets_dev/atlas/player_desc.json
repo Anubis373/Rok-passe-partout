@@ -1,0 +1,23 @@
+{
+    "pixelArt": true,
+    "rectangles": [
+    {"x":  0, "y":  0, "w": 102, "h": 102},
+    {"x":  102, "y":  0, "w":102,  "h":102},
+    {"x":  204, "y":  0, "w":102,  "h":102},
+    {"x":  306, "y":  0, "w":102,  "h":102},
+    {"x":  408, "y":  0, "w":102,   "h":102},
+    {"x":  510, "y":  0, "w":102,   "h":102},
+    {"x":  612, "y":  0, "w":102,   "h":102},
+    {"x":  714, "y":  0, "w":102,   "h":102}
+    ],
+    "groups": [
+    {"name": "top", "frames": [5]},
+    {"name": "bot_no_key", "frames": [3]},
+    {"name": "bot_key", "frames": [1]},
+    {"name": "Shield", "frames":[2]},
+    {"name": "back", "frames":[0]},
+    {"name": "front", "frames":[6]},
+    {"name": "side_no_axe", "frames":[7]},
+    {"name": "side_axe","frames":[4]}
+    ]
+}

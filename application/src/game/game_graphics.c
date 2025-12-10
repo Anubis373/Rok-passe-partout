@@ -20,6 +20,8 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_padding = Vec2_set(0.0f, 0.0f);
     self->m_spacing = Vec2_set(0.1f, 0.1f);
     //
+    self->m_rotationGrid.lower = Vec2_add(Vec2_set(-6.f, -4.f), Vec2_set(16.0f, 4.5f));
+    self->m_rotationGrid.upper = Vec2_add(Vec2_set(6.f, 4.f), Vec2_set(16.0f, 4.5f));
     self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(6.0f, 4.5f));
     self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(6.0f, 4.5f));
     //
@@ -32,7 +34,7 @@ GameGraphics* GameGraphics_create(Scene* scene)
     //
 
     AssetManager* assets = Scene_getAssetManager(scene);
-    SpriteSheet* spriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_GAME);
+    SpriteSheet* spriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PLAYER);
     SpriteSheet* crateSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRATE);
     SpriteSheet* pillarSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PILLAR);
     SpriteSheet* crystalSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRYSTAL);
@@ -44,14 +46,30 @@ GameGraphics* GameGraphics_create(Scene* scene)
     AssertNew(crystalSpriteSheet);
     AssertNew(demonSpriteSheet);
     AssertNew(keySpriteSheet);
-    self->m_spriteRabbit = SpriteSheet_getGroupByName(spriteSheet, "rabbit");
+    self->m_spritePlayerTop = SpriteSheet_getGroupByName(spriteSheet, "top");
+    self->m_spritePlayerBotKey = SpriteSheet_getGroupByName(spriteSheet, "bot_key");
+    self->m_spritePlayerBotNoKey = SpriteSheet_getGroupByName(spriteSheet, "bot_no_key");
+    self->m_spritePlayerBack = SpriteSheet_getGroupByName(spriteSheet, "back");
+    self->m_spritePlayerFront = SpriteSheet_getGroupByName(spriteSheet, "front");
+    self->m_spritePlayerShield = SpriteSheet_getGroupByName(spriteSheet, "Shield");
+    self->m_spritePlayerSideAxe = SpriteSheet_getGroupByName(spriteSheet, "side_axe");
+    self->m_spritePlayerSideNoAxe = SpriteSheet_getGroupByName(spriteSheet, "side_no_axe");
+
     self->m_spriteCrate = SpriteSheet_getGroupByName(crateSpriteSheet, "crate");
     self->m_spritePillar = SpriteSheet_getGroupByName(pillarSpriteSheet, "pillar");
     self->m_spriteCrystal = SpriteSheet_getGroupByName(crystalSpriteSheet, "crystal");
     self->m_spriteDemon = SpriteSheet_getGroupByName(demonSpriteSheet, "demon");
     self->m_spriteKey = SpriteSheet_getGroupByName(keySpriteSheet, "key");
+    AssertNew(self->m_spritePlayerTop);
+    AssertNew(self->m_spritePlayerBotKey);
+    AssertNew(self->m_spritePlayerBotNoKey);
+    AssertNew(self->m_spritePlayerBack);
+    AssertNew(self->m_spritePlayerFront);
+    AssertNew(self->m_spritePlayerShield);
+    AssertNew(self->m_spritePlayerSideAxe);
+    AssertNew(self->m_spritePlayerSideNoAxe);
+
     AssertNew(self->m_spriteCrate);
-    AssertNew(self->m_spriteRabbit);
     AssertNew(self->m_spritePillar);
     AssertNew(self->m_spriteCrystal);
     AssertNew(self->m_spriteDemon);
@@ -73,8 +91,9 @@ static void GameGraphics_updateCells(GameGraphics* self)
     float totalSpacingX = self->m_spacing.x * (GAME_GRID_SIZE_X - 1);
     float totalSpacingY = self->m_spacing.y * (GAME_GRID_SIZE_Y - 1);
     Vec2 gridSize = AABB_getSize(&(self->m_gridAABB));
-    float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / GAME_GRID_SIZE_X;
-    float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / GAME_GRID_SIZE_Y;
+    Vec2 rotationGridSize = AABB_getSize(&(self->m_rotationGrid));
+    float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / (GAME_GRID_SIZE_X + 1);
+    float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / (GAME_GRID_SIZE_Y + 1);
 
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
@@ -84,6 +103,16 @@ static void GameGraphics_updateCells(GameGraphics* self)
             float cellY = self->m_gridAABB.lower.y + self->m_padding.y + i * (cellH + self->m_spacing.y);
             self->m_cells[GAME_GRID_SIZE_Y - 1 - i][j].lower = Vec2_set(cellX, cellY);
             self->m_cells[GAME_GRID_SIZE_Y - 1 - i][j].upper = Vec2_set(cellX + cellW, cellY + cellH);
+        }
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            float cellX = self->m_rotationGrid.lower.x + self->m_padding.x + j * (cellW + self->m_spacing.x);
+            float cellY = self->m_rotationGrid.lower.y + self->m_padding.y + i * (cellH + self->m_spacing.y);
+            self->m_rotationCells[3 - 1 - i][j].lower = Vec2_set(cellX, cellY);
+            self->m_rotationCells[3 - 1 - i][j].upper = Vec2_set(cellX + cellW, cellY + cellH);
         }
     }
 }
@@ -163,6 +192,8 @@ void GameGraphics_render(GameGraphics* self)
     Scene* scene = self->m_scene;
     Camera* camera = Scene_getCamera(scene);
     float scale = Camera_getWorldToViewScale(camera);
+    self->m_selectedColIndex = self->m_scene->m_gameCore->m_playerPosition.y;
+    self->m_selectedRowIndex= self->m_scene->m_gameCore->m_playerPosition.x;
 
     SDL_FRect rect = { 0 };
     int** board = self->m_scene->m_gameCore->board;
@@ -198,13 +229,281 @@ void GameGraphics_render(GameGraphics* self)
             case KEY:
                 SpriteGroup_render(self->m_spriteKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
                 break;
+            case PLAYER:
+                switch (self->m_scene->m_gameCore->player->faceCiel)
+                {
+                case TETE:
+                    SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                    break;
+                case DOS:
+                    SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                    break;
+                case BOUCLIER:
+                    SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                    break;
+                case VISAGE:
+                    SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                    break;
+                case CREUX_HACHE:
+                    if (self->m_scene->m_gameCore->AxeCollected)
+                    {
+                        SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                    else
+                    {
+                        SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                case CREUX_CLE:
+                    if (self->m_scene->m_gameCore->CleCollected)
+                    {
+                        SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                    else
+                    {
+                        SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                }
             }
-
-            if (isSelected)
+        }
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            AABB* RotationGrid = &(self->m_rotationCells[i][j]);
+            rect.x = Camera_worldToViewX(camera, RotationGrid->lower.x);
+            rect.y = Camera_worldToViewY(camera, RotationGrid->upper.y);
+            rect.w = (RotationGrid->upper.x - RotationGrid->lower.x) * scale;
+            rect.h = (RotationGrid->upper.y - RotationGrid->lower.y) * scale;
+            switch (i)
             {
-                SpriteGroup_render(self->m_spriteRabbit, 0, &rect, Vec2_anchor_north_west, 1.0f);
+            case 0:
+                switch (j)
+                {
+                case 0:
+                    break;
+                case 1:
+                    switch (self->m_scene->m_gameCore->player->facePorte)
+                    {
+                    case TETE:
+                        SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case DOS:
+                        SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case BOUCLIER:
+                        SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case VISAGE:
+                        SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case CREUX_HACHE:
+                        if (self->m_scene->m_gameCore->AxeCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                    case CREUX_CLE:
+                        if (self->m_scene->m_gameCore->CleCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                    }
+                case 2:
+                    break;
+                }
+                break;
+            case 1:
+                switch (j)
+                {
+                case 0:
+                    switch (self->m_scene->m_gameCore->player->faceGauchePorte)
+                    {
+                    case VISAGE:
+                        SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case CREUX_HACHE:
+                        if (self->m_scene->m_gameCore->AxeCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                    case TETE:
+                        SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case DOS:
+                        SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case BOUCLIER:
+                        SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case CREUX_CLE:
+                        if (self->m_scene->m_gameCore->CleCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        break;
+                    }
+                    break;
+                case 1:
+                    switch (self->m_scene->m_gameCore->player->faceTerre)
+                    {
+                    case VISAGE:
+                        SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case CREUX_HACHE:
+                        if (self->m_scene->m_gameCore->AxeCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        break;
+                    case CREUX_CLE:
+                        if (self->m_scene->m_gameCore->CleCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                    case TETE:
+                        SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case DOS:
+                        SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case BOUCLIER:
+                        SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch (self->m_scene->m_gameCore->player->faceDroitePorte)
+                    {
+                    case VISAGE:
+                        SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case CREUX_HACHE:
+                        if (self->m_scene->m_gameCore->AxeCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        break;
+                    case CREUX_CLE:
+                        if (self->m_scene->m_gameCore->CleCollected)
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        else
+                        {
+                            SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                    case TETE:
+                        SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case DOS:
+                        SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    case BOUCLIER:
+                        SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                        break;
+                    }
+                    break;
+                }
+                break;
+                case 2:
+                    switch (j)
+                    {
+                    case 0:
+                        break;
+                    case 1:
+                        switch (self->m_scene->m_gameCore->player->faceOppPorte)
+                        {
+                        case VISAGE:
+                            SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        case CREUX_HACHE:
+                            if (self->m_scene->m_gameCore->AxeCollected)
+                            {
+                                SpriteGroup_render(self->m_spritePlayerSideAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                                break;
+                            }
+                            else
+                            {
+                                SpriteGroup_render(self->m_spritePlayerSideNoAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                                break;
+                            }
+                            break;
+                        case CREUX_CLE:
+                            if (self->m_scene->m_gameCore->CleCollected)
+                            {
+                                SpriteGroup_render(self->m_spritePlayerBotKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                                break;
+                            }
+                            else
+                            {
+                                SpriteGroup_render(self->m_spritePlayerBotNoKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                                break;
+                            }
+                        case TETE:
+                            SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        case DOS:
+                            SpriteGroup_render(self->m_spritePlayerBack, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        case BOUCLIER:
+                            SpriteGroup_render(self->m_spritePlayerShield, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                            break;
+                        }
+                        break;
+                    case 2:
+                        break;
+                    }
             }
         }
     }
 }
+
 

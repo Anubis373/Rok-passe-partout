@@ -24,11 +24,23 @@ typedef struct GameGraphics
 
     //AABB m_cells[GAME_GRID_SIZE][GAME_GRID_SIZE];
     AABB m_cells[GAME_GRID_SIZE_Y][GAME_GRID_SIZE_X];
+    AABB m_rotationGrid;
+    AABB m_rotationCells[3][4];
 
     int m_selectedRowIndex;
     int m_selectedColIndex;
 
-    SpriteGroup* m_spriteRabbit;
+    SpriteGroup* m_spritePlayerTop;
+    SpriteGroup* m_spritePlayerBack;
+    SpriteGroup* m_spritePlayerBotKey;
+    SpriteGroup* m_spritePlayerBotNoKey;
+    SpriteGroup* m_spritePlayerFront;
+    SpriteGroup* m_spritePlayerShield;
+    SpriteGroup* m_spritePlayerSideAxe;
+    SpriteGroup* m_spritePlayerSideNoAxe;
+
+
+
     SpriteGroup* m_spriteCrate;
     SpriteGroup* m_spritePillar;
     SpriteGroup* m_spriteCrystal;

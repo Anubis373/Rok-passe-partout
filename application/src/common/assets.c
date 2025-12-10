@@ -12,7 +12,7 @@ void Game_addAssets(AssetManager* assets)
         assets, SPRITE_UI_BASE, "atlas/ui_base", "atlas/ui_base_desc"
     );
     AssetManager_addSpriteSheet(
-        assets, SPRITE_GAME, "atlas/jump_in", "atlas/jump_in_desc"
+        assets, SPRITE_PLAYER, "atlas/player", "atlas/player_desc"
     );
 
     AssetManager_addSpriteSheet(
