@@ -12,7 +12,7 @@ GameCore* GameCore_init()
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
     self->player = playerInit();
-    self->CleCollected = 1;
+    self->CleCollected = 0;
     return(self);
 }
 
@@ -94,6 +94,7 @@ void MovePlayer(int direction, GameCore* self)
     printf("%d\n", self->player->faceOppPorte);
     soltion(self->player, self);
 }
+
 
 bool tryMove(int direction, GameCore* self)
 {
