@@ -12,7 +12,7 @@ GameCore* GameCore_init()
     self->board = Board_create();
     self->m_playerPosition = Vec2_set(2, 1);
     self->player = playerInit();
-    self->CleCollected = 0;
+    self->CleCollected = 1;
     return(self);
 }
 

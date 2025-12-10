@@ -22,7 +22,8 @@ typedef struct GameGraphics
     Vec2 m_padding;
     Vec2 m_spacing;
 
-    AABB m_cells[GAME_GRID_SIZE][GAME_GRID_SIZE];
+    //AABB m_cells[GAME_GRID_SIZE][GAME_GRID_SIZE];
+    AABB m_cells[GAME_GRID_SIZE_Y][GAME_GRID_SIZE_X];
 
     int m_selectedRowIndex;
     int m_selectedColIndex;
