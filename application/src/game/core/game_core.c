@@ -97,6 +97,7 @@ void MovePlayer(int direction, GameCore* self)
     soltion(self->player, self);
 }
 
+
 bool tryMove(int direction, GameCore* self)
 {
     if (self->crystalUnder == true)
