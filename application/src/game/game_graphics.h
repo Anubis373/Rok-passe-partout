@@ -29,6 +29,9 @@ typedef struct GameGraphics
     int m_selectedColIndex;
 
     SpriteGroup* m_spriteRabbit;
+    SpriteGroup* m_spriteCrate;
+    SpriteGroup* m_spritePillar;
+    SpriteGroup* m_spriteCrystal;
 
     bool m_enabled;
 } GameGraphics;

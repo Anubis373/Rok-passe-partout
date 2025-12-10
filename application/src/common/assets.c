@@ -15,6 +15,18 @@ void Game_addAssets(AssetManager* assets)
         assets, SPRITE_GAME, "atlas/jump_in", "atlas/jump_in_desc"
     );
 
+    AssetManager_addSpriteSheet(
+        assets, SPRITE_CRATE, "atlas/crate", "atlas/crate_desc"
+    );
+
+    AssetManager_addSpriteSheet(
+        assets, SPRITE_PILLAR, "atlas/pillar", "atlas/pillar_desc"
+    );
+
+    AssetManager_addSpriteSheet(
+        assets, SPRITE_CRYSTAL, "atlas/crystal", "atlas/crystal_desc"
+    );
+
     // -------------------------------------------------------------------------
     // Fonts
 

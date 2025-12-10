@@ -33,9 +33,20 @@ GameGraphics* GameGraphics_create(Scene* scene)
 
     AssetManager* assets = Scene_getAssetManager(scene);
     SpriteSheet* spriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_GAME);
+    SpriteSheet* crateSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRATE);
+    SpriteSheet* pillarSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PILLAR);
+    SpriteSheet* crystalSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRYSTAL);
     AssertNew(spriteSheet);
+    AssertNew(crateSpriteSheet);
+    AssertNew(pillarSpriteSheet);
+    AssertNew(crystalSpriteSheet);
     self->m_spriteRabbit = SpriteSheet_getGroupByName(spriteSheet, "rabbit");
+    self->m_spriteCrate = SpriteSheet_getGroupByName(crateSpriteSheet, "crate");
+    self->m_spritePillar = SpriteSheet_getGroupByName(pillarSpriteSheet, "pillar");
+    self->m_spriteCrystal = SpriteSheet_getGroupByName(crystalSpriteSheet, "crystal");
+    AssertNew(self->m_spriteCrate);
     AssertNew(self->m_spriteRabbit);
+    AssertNew(self->m_spritePillar);
 
     return self;
 }
@@ -148,6 +159,7 @@ void GameGraphics_render(GameGraphics* self)
     float scale = Camera_getWorldToViewScale(camera);
 
     SDL_FRect rect = { 0 };
+    int** board = self->m_scene->m_gameCore->board;
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
         for (int j = 0; j < GAME_GRID_SIZE_X; j++)
@@ -157,12 +169,24 @@ void GameGraphics_render(GameGraphics* self)
             rect.y = Camera_worldToViewY(camera, cellAABB->upper.y);
             rect.w = (cellAABB->upper.x - cellAABB->lower.x) * scale;
             rect.h = (cellAABB->upper.y - cellAABB->lower.y) * scale;
-
             bool isSelected = (i == self->m_selectedRowIndex && j == self->m_selectedColIndex);
 
             SDL_Color color = isSelected ? g_colors.orange9 : g_colors.gray8;
             SDL_SetRenderDrawColor(g_renderer, color.r, color.g, color.b, 255);
             SDL_RenderFillRect(g_renderer, &rect);
+
+            if (board[i][j] == CRATE)
+            {
+                SpriteGroup_render(self->m_spriteCrate, 0, &rect, Vec2_anchor_north_west, 1.0f);
+            }
+            if (board[i][j] == PILLAR)
+            {
+                SpriteGroup_render(self->m_spritePillar, 0, &rect, Vec2_anchor_north_west, 1.0f);
+            }
+            if (board[i][j] == CRYSTAL)
+            {
+                SpriteGroup_render(self->m_spriteCrystal, 0, &rect, Vec2_anchor_north_west, 1.0f);
+            }
 
             if (isSelected)
             {
@@ -171,3 +195,4 @@ void GameGraphics_render(GameGraphics* self)
         }
     }
 }
+

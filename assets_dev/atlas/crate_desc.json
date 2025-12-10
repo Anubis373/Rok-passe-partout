@@ -1,0 +1,9 @@
+{
+    "pixelArt": true,
+    "rectangles": [
+    {"x":  0, "y":  0, "w": 160, "h": 180}
+    ],
+    "groups": [
+    {"name": "crate", "frames": [0]}
+    ]
+}
