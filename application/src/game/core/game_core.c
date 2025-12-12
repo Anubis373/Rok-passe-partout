@@ -45,7 +45,7 @@ int** gameCore_boardCreate()
     board[0][2] = KEY;
     board[2][2] = CRYSTAL;
     board[3][3] = MONSTER;
-    board[2][0] = AXE;
+    board[2][0] = AXE;  
     return(board);
 }
 
@@ -290,16 +290,16 @@ bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core)
     int x = (int)pos.y;
     int y = (int)pos.x;
 
-    if (y > 0 && core->board[y - 1][x] == CRATE)
+    if (y > 0 && (core->board[y - 1][x] == CRATE || core->board[y - 1][x] == MONSTER))
         return false;
 
-    if (y < GAME_GRID_SIZE_Y - 1 && core->board[y + 1][x] == CRATE)
+    if (y < GAME_GRID_SIZE_Y - 1 && (core->board[y + 1][x] == CRATE || core->board[y + 1][x] == MONSTER))
         return false;
 
-    if (x > 0 && core->board[y][x - 1] == CRATE)
+    if (x > 0 && (core->board[y][x - 1] == CRATE || core->board[y][x - 1] == MONSTER))
         return false;
 
-    if (x < GAME_GRID_SIZE_X - 1 && core->board[y][x + 1] == CRATE)
+    if (x < GAME_GRID_SIZE_X - 1 && (core->board[y][x + 1] == CRATE || core->board[y][x + 1] == MONSTER))
         return false;
 
     return true;
