@@ -404,16 +404,22 @@ bool gameCore_hashContains(GameHashmap* map, GameCore* state)
 {
     uint64_t hash = gameCore_hash(state);
     size_t idx = hash % map->m_capacity;
-
-    while (map->m_idMap[idx] != (size_t)-1)
+    GameHashmapEntry* entry = &map->m_entries[idx];
+    while (entry->currState.player != NULL)
     {
-        size_t id = map->m_idMap[idx];
-        GameCore* stored = &map->m_entries[id].currState;
-
-        if (gameCore_equals(stored, state))
-            return true;
-
-        idx = (idx + 1) % map->m_capacity;
+        if (!gameCore_equals(&entry->currState, state))
+        {
+            return(true);
+        }
+        if (idx < map->m_capacity)
+        {
+            idx++;
+            map->m_capacity;
+        }
+        else
+        {
+            return(false);
+        }
     }
     return false;
 }
@@ -438,7 +444,7 @@ void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
     map->m_idMap[idx] = id;
 }
 
-void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)
+void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)     // Valide
 {
     receiver->AxeCollected = giver->AxeCollected;
     receiver->board = gameCore_boardCopy(giver->board);
@@ -450,7 +456,7 @@ void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)
     *receiver->player = *giver->player;
 }
 
-int** gameCore_boardCopy(int** giver)
+int** gameCore_boardCopy(int** giver)                       // Valide
 {
     int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
@@ -463,7 +469,7 @@ int** gameCore_boardCopy(int** giver)
 
 void gameCore_resolution(GameCore* self)
 {
-    GameHashmap* hashmap = gamehashmap_Create(40);
+    GameHashmap* hashmap = gamehashmap_Create(40000);
     gameCore_hashInsert(hashmap, *self, *self);
     SListNode* file = gameCore_FileCreate();
     GameCore* previous = GameCore_init();
@@ -471,51 +477,48 @@ void gameCore_resolution(GameCore* self)
     while (!gameCore_FileEmpty(file))
     {
         file = gameCore_FilePopFirst(file, &previous);
-        GameCore* current = GameCore_init();
+        Grid_Render(previous->board);
         if (solution(previous->player, previous))
         {
             printf("Solution Found");
         }
         if (tryMove(HAUT, previous))
         {
-            current = NULL;
+            GameCore* current = GameCore_init();
             gameCore_CoreCopy(current, previous);
             MovePlayer(HAUT, current);
             gameCore_hashInsert(hashmap, *current, *previous);
-            gameCore_FileInsert(file, current);
+            if(!gameCore_hashContains(hashmap,current)) gameCore_FileInsert(file, current);
         }
         if (tryMove(BAS, previous))
         {
-            current = NULL;
             GameCore* current = GameCore_init();
             gameCore_CoreCopy(current, previous);
             MovePlayer(BAS, current);
             gameCore_hashInsert(hashmap, *current, *previous);
-            gameCore_FileInsert(file, current);
+            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
         }
         if (tryMove(GAUCHE, previous))
         {
-            current = NULL;
             GameCore* current = GameCore_init();
             gameCore_CoreCopy(current, previous);
             MovePlayer(GAUCHE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
-            gameCore_FileInsert(file, current);
+            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
         }
         if (tryMove(DROITE, previous))
         {
-            current = NULL;
             GameCore* current = GameCore_init();
             gameCore_CoreCopy(current, previous);
             MovePlayer(DROITE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
-            gameCore_FileInsert(file, current);
+            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
         }
     }
     printf("No solution found");
 }
 
-SListNode* gameCore_FileCreate()
+SListNode* gameCore_FileCreate()        // Valide
 {
     SListNode* file = (SListNode*)calloc(1, sizeof(SListNode));
     file->core = NULL;
@@ -523,7 +526,7 @@ SListNode* gameCore_FileCreate()
     return(file);
 }
 
-void gameCore_FileInsert(SListNode* file, GameCore* core)
+void gameCore_FileInsert(SListNode* file, GameCore* core)   // Valide
 {
     if (file->core == NULL)
     {
@@ -540,7 +543,7 @@ void gameCore_FileInsert(SListNode* file, GameCore* core)
     file->next = next;
 }
 
-SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core)
+SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core)      // Valide
 {
     if (!file)
     {
@@ -555,6 +558,8 @@ SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core)
     SListNode* current = gameCore_FileCreate();
     current = file->next;
     *core = file->core;
+    file->core = NULL;
+    file->next = NULL;
     free(file);
     if (!current)
     {
@@ -563,7 +568,7 @@ SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core)
     return(current);
 }
 
-bool gameCore_FileEmpty(SListNode* file)
+bool gameCore_FileEmpty(SListNode* file)        // Valide
 {
     if (!file) return true;
     if (!file->core && !file->next) return(true);

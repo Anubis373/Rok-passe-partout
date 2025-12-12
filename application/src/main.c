@@ -68,7 +68,6 @@ int main(int argc, char* argv[])
             scene = Scene_create();
             Scene_mainLoop(scene);
             gameCore_resolution(scene->m_gameCore);
-            Scene_destroy(scene);
             scene = NULL;
 
         case GAME_SCENE_QUIT:

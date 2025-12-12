@@ -113,6 +113,8 @@ void gameCore_resolution(GameCore* self);
 
 SListNode* gameCore_FileCreate();
 
+void gameCore_CoreCopy(GameCore* receiver, GameCore* giver);
+
 void gameCore_FileInsert(SListNode* file, GameCore* core);
 
 SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core);
