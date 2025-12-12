@@ -138,7 +138,7 @@ void GameGraphics_update(GameGraphics* self)
 
     if (input->mouse.rightPressed)
     {
-        gameCore_rotationBouclier(self->m_scene->m_gameCore->player, self->m_scene->m_gameCore);
+        gameCore_rotationBouclier(&self->m_scene->m_gameCore->player, self->m_scene->m_gameCore);
     }
 
     if (input->mouse.leftPressed)
@@ -196,7 +196,6 @@ void GameGraphics_render(GameGraphics* self)
     self->m_selectedRowIndex= self->m_scene->m_gameCore->m_playerPosition.x;
 
     SDL_FRect rect = { 0 };
-    int** board = self->m_scene->m_gameCore->board;
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
         for (int j = 0; j < GAME_GRID_SIZE_X; j++)
@@ -212,7 +211,7 @@ void GameGraphics_render(GameGraphics* self)
             SDL_SetRenderDrawColor(g_renderer, color.r, color.g, color.b, 255);
             SDL_RenderFillRect(g_renderer, &rect);
 
-            switch (board[i][j])
+            switch (self->m_scene->m_gameCore->board[i][j])
             {
             case CRATE:
                 SpriteGroup_render(self->m_spriteCrate, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -230,7 +229,7 @@ void GameGraphics_render(GameGraphics* self)
                 SpriteGroup_render(self->m_spriteKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
                 break;
             case PLAYER:
-                switch (self->m_scene->m_gameCore->player->faceCiel)
+                switch (self->m_scene->m_gameCore->player.faceCiel)
                 {
                 case TETE:
                     SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -287,7 +286,7 @@ void GameGraphics_render(GameGraphics* self)
                 case 0:
                     break;
                 case 1:
-                    switch (self->m_scene->m_gameCore->player->facePorte)
+                    switch (self->m_scene->m_gameCore->player.facePorte)
                     {
                     case TETE:
                         SpriteGroup_render(self->m_spritePlayerTop, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -332,7 +331,7 @@ void GameGraphics_render(GameGraphics* self)
                 switch (j)
                 {
                 case 0:
-                    switch (self->m_scene->m_gameCore->player->faceGauchePorte)
+                    switch (self->m_scene->m_gameCore->player.faceGauchePorte)
                     {
                     case VISAGE:
                         SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -372,7 +371,7 @@ void GameGraphics_render(GameGraphics* self)
                     }
                     break;
                 case 1:
-                    switch (self->m_scene->m_gameCore->player->faceTerre)
+                    switch (self->m_scene->m_gameCore->player.faceTerre)
                     {
                     case VISAGE:
                         SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -412,7 +411,7 @@ void GameGraphics_render(GameGraphics* self)
                     }
                     break;
                 case 2:
-                    switch (self->m_scene->m_gameCore->player->faceDroitePorte)
+                    switch (self->m_scene->m_gameCore->player.faceDroitePorte)
                     {
                     case VISAGE:
                         SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);
@@ -459,7 +458,7 @@ void GameGraphics_render(GameGraphics* self)
                     case 0:
                         break;
                     case 1:
-                        switch (self->m_scene->m_gameCore->player->faceOppPorte)
+                        switch (self->m_scene->m_gameCore->player.faceOppPorte)
                         {
                         case VISAGE:
                             SpriteGroup_render(self->m_spritePlayerFront, 0, &rect, Vec2_anchor_north_west, 1.0f);

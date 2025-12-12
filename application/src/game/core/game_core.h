@@ -20,12 +20,24 @@ typedef struct Player
     int faceGauchePorte;
     int faceDroitePorte;
 }Player;
+//
+//typedef struct GameCore
+//{
+//    int** board;
+//    Vec2 m_playerPosition;
+//    Player* player;
+//    bool CleCollected;
+//    bool AxeCollected;
+//    bool crystalUnder;
+//} GameCore;
+
+
 
 typedef struct GameCore
 {
-    int** board;
+    int board[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y];
     Vec2 m_playerPosition;
-    Player* player;
+    Player player;
     bool CleCollected;
     bool AxeCollected;
     bool crystalUnder;
@@ -85,9 +97,9 @@ enum Direction
 
 GameCore* gameCore_init();
 
-Player* gameCore_playerInit();
+void gameCore_playerInit(GameCore* self);
 
-int** gameCore_boardCreate();
+void gameCore_boardCreate(GameCore* self);
 
 void gameCore_gridRender(int** grid);
 
@@ -121,4 +133,4 @@ SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core);
 
 bool gameCore_FileEmpty(SListNode* file);
 
-int** gameCore_boardCopy(int** giver);
+void gameCore_boardCopy(int** receiver , int** giver);

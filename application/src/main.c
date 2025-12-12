@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
         case GAME_SCENE_MAIN:
             scene = Scene_create();
             Scene_mainLoop(scene);
-            gameCore_resolution(scene->m_gameCore);
+            //gameCore_resolution(scene->m_gameCore);
             scene = NULL;
 
         case GAME_SCENE_QUIT:

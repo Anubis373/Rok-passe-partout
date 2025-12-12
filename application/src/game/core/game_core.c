@@ -9,44 +9,34 @@ GameCore* gameCore_init()
 {
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
     AssertNew(self);
-    self->board = gameCore_boardCreate();
+    gameCore_boardCreate(self);
     self->m_playerPosition = Vec2_set(2, 1);
-    self->player = gameCore_playerInit();
+    gameCore_playerInit(self);
     self->CleCollected = 0;
     self->AxeCollected = 0;
     self->crystalUnder = 0;
     return(self);
 }
 
-Player* gameCore_playerInit()
+void gameCore_playerInit(GameCore* self)
 {
-    Player* cube = (Player*)calloc(1, sizeof(Player));
-    AssertNew(cube)
-    cube->facePorte = VISAGE;
-    cube->faceCiel = TETE;
-    cube->faceOppPorte = DOS;
-    cube->faceTerre = CREUX_CLE;
-    cube->faceGauchePorte = CREUX_HACHE;
-    cube->faceDroitePorte = BOUCLIER;
-
-    return cube;
+    self->player.facePorte = VISAGE;
+    self->player.faceCiel = TETE;
+    self->player.faceOppPorte = DOS;
+    self->player.faceTerre = CREUX_CLE;
+    self->player.faceGauchePorte = CREUX_HACHE;
+    self->player.faceDroitePorte = BOUCLIER;
 }
 
-int** gameCore_boardCreate()
+void gameCore_boardCreate(GameCore* self)
 {
-    int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
-    for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
-    {
-        board[i] = calloc(GAME_GRID_SIZE_X, sizeof(int));
-    }
-    board[0][0] = CRATE;
-    board[2][1] = PLAYER;
-    board[0][3] = PILLAR;
-    board[0][2] = KEY;
-    board[2][2] = CRYSTAL;
-    board[3][3] = MONSTER;
-    board[2][0] = AXE;
-    return(board);
+    self->board[0][0] = CRATE;
+    self->board[2][1] = PLAYER;
+    self->board[0][3] = PILLAR;
+    self->board[0][2] = KEY;
+    self->board[2][2] = CRYSTAL;
+    self->board[3][3] = MONSTER;
+    self->board[2][0] = AXE;
 }
 
 
@@ -71,7 +61,7 @@ void gameCore_movePlayer(int direction, GameCore* self)
     {
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
     }
-    gameCore_rotationDeplacement(self->player, direction);
+    gameCore_rotationDeplacement(&self->player, direction);
     if (direction == HAUT)
     {
         self->board[(int)(PlayerPos.x)-1][(int)(PlayerPos.y)] = PLAYER;
@@ -92,7 +82,7 @@ void gameCore_movePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
     }
-    gameCore_solution(self->player, self);
+    gameCore_solution(&self->player, self);
 }
 
 
@@ -116,16 +106,16 @@ bool gameCore_tryMove(int direction, GameCore* self)
         case MONSTER:
             return false;
         case CRYSTAL:
-            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->player.facePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
             self->crystalUnder = true;
             return true;
         case KEY:
-            if (self->player->facePorte != CREUX_CLE) return false;
+            if (self->player.facePorte != CREUX_CLE) return false;
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player->facePorte != CREUX_HACHE) return false;
+            if (self->player.facePorte != CREUX_HACHE) return false;
             self->AxeCollected = true;
             for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
             {
@@ -151,16 +141,16 @@ bool gameCore_tryMove(int direction, GameCore* self)
         case MONSTER:
             return false;
         case CRYSTAL:
-            if (self->player->faceOppPorte != CREUX_CLE) return false;
+            if (self->player.faceOppPorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
             self->crystalUnder = true;
             return true;
         case KEY:
-            if (self->player->faceOppPorte != CREUX_CLE) return false;
+            if (self->player.faceOppPorte != CREUX_CLE) return false;
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player->faceOppPorte != CREUX_HACHE) return false;
+            if (self->player.faceOppPorte != CREUX_HACHE) return false;
             self->AxeCollected = true;
             for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
             {
@@ -184,16 +174,16 @@ bool gameCore_tryMove(int direction, GameCore* self)
         case MONSTER:
             return false;
         case CRYSTAL:
-            if (self->player->faceDroitePorte != CREUX_CLE) return false;
+            if (self->player.faceDroitePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
             self->crystalUnder = true;
             return true;
         case KEY:
-            if (self->player->faceDroitePorte != CREUX_CLE) return false;
+            if (self->player.faceDroitePorte != CREUX_CLE) return false;
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player->faceDroitePorte != CREUX_HACHE) return false;
+            if (self->player.faceDroitePorte != CREUX_HACHE) return false;
             self->AxeCollected = true;
             for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
             {
@@ -217,16 +207,16 @@ bool gameCore_tryMove(int direction, GameCore* self)
         case MONSTER:
             return false;
         case CRYSTAL:
-            if (self->player->faceGauchePorte != CREUX_CLE) return false;
+            if (self->player.faceGauchePorte != CREUX_CLE) return false;
             if (self->CleCollected == true) return false;
             self->crystalUnder = true;
             return true;
         case KEY:
-            if (self->player->faceGauchePorte != CREUX_CLE) return false;
+            if (self->player.faceGauchePorte != CREUX_CLE) return false;
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player->faceGauchePorte != CREUX_HACHE) return false;
+            if (self->player.faceGauchePorte != CREUX_HACHE) return false;
             self->AxeCollected = true;
             for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
             {
@@ -281,9 +271,9 @@ void gameCore_rotationDeplacement(Player* self, int direction)
 }
 
 
-bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core)
+bool gameCore_rotationBouclierIsValid(Player self, GameCore* core)
 {
-    if (self->faceTerre != BOUCLIER)
+    if (self.faceTerre != BOUCLIER)
         return false;
 
     Vec2 pos = core->m_playerPosition;
@@ -307,7 +297,7 @@ bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core)
 
 void gameCore_rotationBouclier(Player* self, GameCore* core)
 {
-    if (gameCore_rotationBouclierIsValid(self, core))
+    if (gameCore_rotationBouclierIsValid(*self, core))
     {
         int tmp;
         tmp = self->facePorte;
@@ -379,10 +369,10 @@ uint64_t gameCore_hash(GameCore *self)
     hash ^= (uint64_t)(self->AxeCollected);
     hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
 
-    hash ^= (uint64_t)(self->player->faceTerre);
+    hash ^= (uint64_t)(self->player.faceTerre);
     hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
 
-    hash ^= (uint64_t)(self->player->facePorte);
+    hash ^= (uint64_t)(self->player.facePorte);
     hash = hash * 0xbf58476d1ce4e5b9ULL + 0x9e3779b97f4a7c15ULL;
 
     return hash;
@@ -393,8 +383,8 @@ bool gameCore_equals(GameCore* plateau1, GameCore* plateau2)
 {
     if (plateau1->AxeCollected != plateau2->AxeCollected) return false;
     if (plateau1->CleCollected != plateau2->CleCollected) return false;
-    if (plateau1->player->facePorte != plateau2->player->facePorte) return false;
-    if (plateau1->player->faceTerre != plateau2->player->faceTerre) return false;
+    if (plateau1->player.facePorte != plateau2->player.facePorte) return false;
+    if (plateau1->player.faceTerre != plateau2->player.faceTerre) return false;
     if (plateau1->m_playerPosition.x != plateau2->m_playerPosition.x) return false;
     if (plateau1->m_playerPosition.y != plateau2->m_playerPosition.y) return false;
     return true;
@@ -402,69 +392,58 @@ bool gameCore_equals(GameCore* plateau1, GameCore* plateau2)
 
 bool gameCore_hashContains(GameHashmap* map, GameCore* state)
 {
-    uint64_t hash = gameCore_hash(state);
-    size_t idx = hash % map->m_capacity;
-    GameHashmapEntry* entry = &map->m_entries[idx];
-    while (entry->currState.player != NULL)
-    {
-        if (!gameCore_equals(&entry->currState, state))
-        {
-            return(true);
-        }
-        if (idx < map->m_capacity)
-        {
-            idx++;
-            map->m_capacity;
-        }
-        else
-        {
-            return(false);
-        }
-    }
-    return false;
+    //uint64_t hash = gameCore_hash(state);
+    //size_t idx = map->m_idMap[ hash % map->m_capacity ];
+    //GameHashmapEntry* entry = &map->m_entries[idx];
+    //while (entry->currState.player != NULL)
+    //{
+    //    if (!gameCore_equals(&entry->currState, state))
+    //    {
+    //        return(true);
+    //    }
+    //    idx = (idx + 1) % map->m_capacity;
+    //    entry = &map->m_entries[idx];
+    //}
+    //return false;
 }
 
 
 void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
 {
-    uint64_t hash = gameCore_hash(&curr);
-    size_t idx = hash % map->m_capacity;
+    //uint64_t hash = gameCore_hash(&curr);
+    //size_t idx = hash % map->m_capacity;
+    //GameHashmapEntry* entry = &map->m_entries[idx];
+    //while (entry->currState.player != NULL)
+    //{
+    //    if (gameCore_equals(&map->m_entries[idx].currState, &curr))  return; // déjà présent
+    //    entry = &map->m_entries[idx + 1];
+    //    idx = idx + 1 % map->m_capacity;
+    //}
 
-    while (map->m_idMap[idx] != (size_t)-1)
-    {
-        size_t id = map->m_idMap[idx];
-        if (gameCore_equals(&map->m_entries[id].currState, &curr))
-            return; // déjà présent
-        idx = (idx + 1) % map->m_capacity;
-    }
-
-    size_t id = map->m_size++;
-    map->m_entries[id].currState = curr;
-    map->m_entries[id].prevState = prev;
-    map->m_idMap[idx] = id;
+    //GameHashmapEntry* newEntry = GameHashmapEntry_Create(curr,prev);
+    //map->m_idMap[idx] = newEntry;
 }
 
 void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)     // Valide
 {
     receiver->AxeCollected = giver->AxeCollected;
-    receiver->board = gameCore_boardCopy(giver->board);
     receiver->CleCollected = giver->CleCollected;
     receiver->crystalUnder = giver->crystalUnder;
     receiver->m_playerPosition.x = giver->m_playerPosition.x;
     receiver->m_playerPosition.y = giver->m_playerPosition.y;
-    receiver->player = calloc(1, sizeof(Player));
-    *receiver->player = *giver->player;
+    receiver->player = giver->player;
+    gameCore_boardCopy(receiver->board, giver->board);
 }
 
-int** gameCore_boardCopy(int** giver)                       // Valide
+void gameCore_boardCopy(int** board1, int** board2)
 {
-    int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
-    for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+    for (int i = 0; i < GAME_GRID_SIZE_X; i++)
     {
-        board[i] = calloc(GAME_GRID_SIZE_X, sizeof(int));
-        memcpy(board[i], giver[i], GAME_GRID_SIZE_X * sizeof(int));
+        for (int j = 0; j < GAME_GRID_SIZE_Y; j++)
+        {
+            board1[i][j] = board2[i][j];
+        }
     }
-    return board;
 }
 
 void gameCore_resolution(GameCore* self)
@@ -477,14 +456,14 @@ void gameCore_resolution(GameCore* self)
     while (!gameCore_FileEmpty(file))
     {
         file = gameCore_FilePopFirst(file, &previous);
-        Grid_Render(previous->board);
-        if (solution(previous->player, previous))
+        gameCore_gridRender(previous->board);
+        if (gameCore_solution(&previous->player, previous))
         {
             printf("Solution Found");
         }
         if (gameCore_tryMove(HAUT, previous))
         {
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
             gameCore_movePlayer(HAUT, current);
             gameCore_hashInsert(hashmap, *current, *previous);
@@ -492,7 +471,7 @@ void gameCore_resolution(GameCore* self)
         }
         if (gameCore_tryMove(BAS, previous))
         {
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
             gameCore_movePlayer(BAS, current);
             gameCore_hashInsert(hashmap, *current, *previous);
@@ -500,7 +479,7 @@ void gameCore_resolution(GameCore* self)
         }
         if (gameCore_tryMove(GAUCHE, previous))
         {
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
             gameCore_movePlayer(GAUCHE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
@@ -508,7 +487,7 @@ void gameCore_resolution(GameCore* self)
         }
         if (gameCore_tryMove(DROITE, previous))
         {
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
             gameCore_movePlayer(DROITE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
