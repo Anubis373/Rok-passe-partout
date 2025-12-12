@@ -92,11 +92,7 @@ void MovePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
     }
-    Grid_Render(self->board);
-    printf("%d\n", self->player->facePorte);
-    printf("%d %d %d\n", self->player->faceGauchePorte, self->player->faceCiel, self->player->faceDroitePorte);
-    printf("%d\n", self->player->faceOppPorte);
-    soltion(self->player, self);
+    solution(self->player, self);
 }
 
 
@@ -325,7 +321,7 @@ void rotationBouclier(Player* self, GameCore* core)
     printf("%d\n", self->faceOppPorte);
 }
 
-bool soltion(Player* self, GameCore* core)
+bool solution(Player* self, GameCore* core)
 {
     if (core->m_playerPosition.x != 0 || core->m_playerPosition.y != 2)
         return false;
@@ -442,8 +438,134 @@ void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
     map->m_idMap[idx] = id;
 }
 
-
-void gameCore_resolution()
+void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)
 {
+    receiver->AxeCollected = giver->AxeCollected;
+    receiver->board = gameCore_boardCopy(giver->board);
+    receiver->CleCollected = giver->CleCollected;
+    receiver->crystalUnder = giver->crystalUnder;
+    receiver->m_playerPosition.x = giver->m_playerPosition.x;
+    receiver->m_playerPosition.y = giver->m_playerPosition.y;
+    receiver->player = calloc(1, sizeof(Player));
+    *receiver->player = *giver->player;
+}
 
+int** gameCore_boardCopy(int** giver)
+{
+    int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
+    for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+    {
+        board[i] = calloc(GAME_GRID_SIZE_X, sizeof(int));
+        memcpy(board[i], giver[i], GAME_GRID_SIZE_X * sizeof(int));
+    }
+    return board;
+}
+
+void gameCore_resolution(GameCore* self)
+{
+    GameHashmap* hashmap = gamehashmap_Create(40);
+    gameCore_hashInsert(hashmap, *self, *self);
+    SListNode* file = gameCore_FileCreate();
+    GameCore* previous = GameCore_init();
+    gameCore_FileInsert(file,self);
+    while (!gameCore_FileEmpty(file))
+    {
+        file = gameCore_FilePopFirst(file, &previous);
+        GameCore* current = GameCore_init();
+        if (solution(previous->player, previous))
+        {
+            printf("Solution Found");
+        }
+        if (tryMove(HAUT, previous))
+        {
+            current = NULL;
+            gameCore_CoreCopy(current, previous);
+            MovePlayer(HAUT, current);
+            gameCore_hashInsert(hashmap, *current, *previous);
+            gameCore_FileInsert(file, current);
+        }
+        if (tryMove(BAS, previous))
+        {
+            current = NULL;
+            GameCore* current = GameCore_init();
+            gameCore_CoreCopy(current, previous);
+            MovePlayer(BAS, current);
+            gameCore_hashInsert(hashmap, *current, *previous);
+            gameCore_FileInsert(file, current);
+        }
+        if (tryMove(GAUCHE, previous))
+        {
+            current = NULL;
+            GameCore* current = GameCore_init();
+            gameCore_CoreCopy(current, previous);
+            MovePlayer(GAUCHE, current);
+            gameCore_hashInsert(hashmap, *current, *previous);
+            gameCore_FileInsert(file, current);
+        }
+        if (tryMove(DROITE, previous))
+        {
+            current = NULL;
+            GameCore* current = GameCore_init();
+            gameCore_CoreCopy(current, previous);
+            MovePlayer(DROITE, current);
+            gameCore_hashInsert(hashmap, *current, *previous);
+            gameCore_FileInsert(file, current);
+        }
+    }
+    printf("No solution found");
+}
+
+SListNode* gameCore_FileCreate()
+{
+    SListNode* file = (SListNode*)calloc(1, sizeof(SListNode));
+    file->core = NULL;
+    file->next = NULL;
+    return(file);
+}
+
+void gameCore_FileInsert(SListNode* file, GameCore* core)
+{
+    if (file->core == NULL)
+    {
+        file->core = core;
+        return;
+    }
+    while (file->next)
+    {
+        file = file->next;
+    }
+    SListNode* next = (SListNode*)calloc(1, sizeof(SListNode));
+    next->core = core;
+    next->next = NULL;
+    file->next = next;
+}
+
+SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core)
+{
+    if (!file)
+    {
+        *core = NULL;
+        return NULL;
+    }
+    if (file->core == NULL && file->next == NULL)
+    {
+        *core = NULL;
+        return file;
+    }
+    SListNode* current = gameCore_FileCreate();
+    current = file->next;
+    *core = file->core;
+    free(file);
+    if (!current)
+    {
+        current = gameCore_FileCreate();
+    }
+    return(current);
+}
+
+bool gameCore_FileEmpty(SListNode* file)
+{
+    if (!file) return true;
+    if (!file->core && !file->next) return(true);
+    return(false);
 }

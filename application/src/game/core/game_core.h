@@ -45,6 +45,12 @@ typedef struct GameHashmap
     size_t m_size;
 } GameHashmap;
 
+typedef struct SListNode
+{
+    struct SListNode* next;
+    GameCore* core;
+} SListNode;
+
 
 enum GridElement
 {
@@ -95,12 +101,22 @@ bool rotationBouclierIsValid(Player* self, GameCore* core);
 
 bool tryMove(int direction, GameCore* self);
 
-bool soltion(Player* self, GameCore* core);
+bool solution(Player* self, GameCore* core);
 
 bool gameCore_equals(GameCore* plateau1, GameCore* plateau2);
 
 bool gameCore_hashContains(GameHashmap* map, GameCore* state);
 
-void gameCore_hashInsert(GameHashmap* map, GameCore* state);
+void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev);
 
-void gameCore_resolution();
+void gameCore_resolution(GameCore* self);
+
+SListNode* gameCore_FileCreate();
+
+void gameCore_FileInsert(SListNode* file, GameCore* core);
+
+SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core);
+
+bool gameCore_FileEmpty(SListNode* file);
+
+int** gameCore_boardCopy(int** giver);
