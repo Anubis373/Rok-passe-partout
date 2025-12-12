@@ -5,20 +5,20 @@
 */
 
 #include "game_core.h"
-GameCore* GameCore_init()
+GameCore* gameCore_init()
 {
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
     AssertNew(self);
-    self->board = Board_create();
+    self->board = gameCore_boardCreate();
     self->m_playerPosition = Vec2_set(2, 1);
-    self->player = playerInit();
+    self->player = gameCore_playerInit();
     self->CleCollected = 0;
     self->AxeCollected = 0;
     self->crystalUnder = 0;
     return(self);
 }
 
-Player* playerInit()
+Player* gameCore_playerInit()
 {
     Player* cube = (Player*)calloc(1, sizeof(Player));
     AssertNew(cube)
@@ -32,7 +32,7 @@ Player* playerInit()
     return cube;
 }
 
-int** Board_create()
+int** gameCore_boardCreate()
 {
     int** board = calloc(GAME_GRID_SIZE_Y, sizeof(int*));
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
@@ -50,7 +50,7 @@ int** Board_create()
 }
 
 
-void Grid_Render(int** board)
+void gameCore_gridRender(int** board)
 {
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
@@ -64,14 +64,14 @@ void Grid_Render(int** board)
 }
 
 
-void MovePlayer(int direction, GameCore* self)
+void gameCore_movePlayer(int direction, GameCore* self)
 {
     Vec2 PlayerPos = self->m_playerPosition;
     if (self->board[(int)PlayerPos.x][(int)PlayerPos.y] != CRYSTAL)
     {
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
     }
-    rotationDeplacement(self->player, direction);
+    gameCore_rotationDeplacement(self->player, direction);
     if (direction == HAUT)
     {
         self->board[(int)(PlayerPos.x)-1][(int)(PlayerPos.y)] = PLAYER;
@@ -92,11 +92,11 @@ void MovePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
     }
-    solution(self->player, self);
+    gameCore_solution(self->player, self);
 }
 
 
-bool tryMove(int direction, GameCore* self)
+bool gameCore_tryMove(int direction, GameCore* self)
 {
     if (self->crystalUnder == true)
     {
@@ -242,7 +242,7 @@ bool tryMove(int direction, GameCore* self)
     }
 }
 
-void rotationDeplacement(Player* self, int direction)
+void gameCore_rotationDeplacement(Player* self, int direction)
 {
     int tmp;
     switch (direction)
@@ -281,7 +281,7 @@ void rotationDeplacement(Player* self, int direction)
 }
 
 
-bool rotationBouclierIsValid(Player* self, GameCore* core)
+bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core)
 {
     if (self->faceTerre != BOUCLIER)
         return false;
@@ -305,9 +305,9 @@ bool rotationBouclierIsValid(Player* self, GameCore* core)
     return true;
 }
 
-void rotationBouclier(Player* self, GameCore* core)
+void gameCore_rotationBouclier(Player* self, GameCore* core)
 {
-    if (rotationBouclierIsValid(self, core))
+    if (gameCore_rotationBouclierIsValid(self, core))
     {
         int tmp;
         tmp = self->facePorte;
@@ -321,7 +321,7 @@ void rotationBouclier(Player* self, GameCore* core)
     printf("%d\n", self->faceOppPorte);
 }
 
-bool solution(Player* self, GameCore* core)
+bool gameCore_solution(Player* self, GameCore* core)
 {
     if (core->m_playerPosition.x != 0 || core->m_playerPosition.y != 2)
         return false;
@@ -466,48 +466,48 @@ void gameCore_resolution(GameCore* self)
     GameHashmap* hashmap = gamehashmap_Create(40);
     gameCore_hashInsert(hashmap, *self, *self);
     SListNode* file = gameCore_FileCreate();
-    GameCore* previous = GameCore_init();
+    GameCore* previous = gameCore_init();
     gameCore_FileInsert(file,self);
     while (!gameCore_FileEmpty(file))
     {
         file = gameCore_FilePopFirst(file, &previous);
-        GameCore* current = GameCore_init();
-        if (solution(previous->player, previous))
+        GameCore* current = gameCore_init();
+        if (gameCore_solution(previous->player, previous))
         {
             printf("Solution Found");
         }
-        if (tryMove(HAUT, previous))
+        if (gameCore_tryMove(HAUT, previous))
         {
             current = NULL;
             gameCore_CoreCopy(current, previous);
-            MovePlayer(HAUT, current);
+            gameCore_movePlayer(HAUT, current);
             gameCore_hashInsert(hashmap, *current, *previous);
             gameCore_FileInsert(file, current);
         }
-        if (tryMove(BAS, previous))
+        if (gameCore_tryMove(BAS, previous))
         {
             current = NULL;
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
-            MovePlayer(BAS, current);
+            gameCore_movePlayer(BAS, current);
             gameCore_hashInsert(hashmap, *current, *previous);
             gameCore_FileInsert(file, current);
         }
-        if (tryMove(GAUCHE, previous))
+        if (gameCore_tryMove(GAUCHE, previous))
         {
             current = NULL;
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
-            MovePlayer(GAUCHE, current);
+            gameCore_movePlayer(GAUCHE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
             gameCore_FileInsert(file, current);
         }
-        if (tryMove(DROITE, previous))
+        if (gameCore_tryMove(DROITE, previous))
         {
             current = NULL;
-            GameCore* current = GameCore_init();
+            GameCore* current = gameCore_init();
             gameCore_CoreCopy(current, previous);
-            MovePlayer(DROITE, current);
+            gameCore_movePlayer(DROITE, current);
             gameCore_hashInsert(hashmap, *current, *previous);
             gameCore_FileInsert(file, current);
         }

@@ -12,7 +12,7 @@ Scene* Scene_create()
 {
     Scene* self = (Scene*)calloc(1, sizeof(Scene));
     AssertNew(self);
-    self->m_gameCore = GameCore_init();
+    self->m_gameCore = gameCore_init();
     self->m_assets = AssetManager_create(SPRITE_COUNT, FONT_COUNT);
     Game_addAssets(self->m_assets);
 

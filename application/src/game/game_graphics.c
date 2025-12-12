@@ -138,7 +138,7 @@ void GameGraphics_update(GameGraphics* self)
 
     if (input->mouse.rightPressed)
     {
-        rotationBouclier(self->m_scene->m_gameCore->player, self->m_scene->m_gameCore);
+        gameCore_rotationBouclier(self->m_scene->m_gameCore->player, self->m_scene->m_gameCore);
     }
 
     if (input->mouse.leftPressed)
@@ -173,11 +173,11 @@ void GameGraphics_update(GameGraphics* self)
                             direction = HAUT;
                         }
                     }
-                    if (tryMove(direction, self->m_scene->m_gameCore))
+                    if (gameCore_tryMove(direction, self->m_scene->m_gameCore))
                     {
                         self->m_selectedRowIndex = i;
                         self->m_selectedColIndex = j;
-                        MovePlayer(direction, self->m_scene->m_gameCore);
+                        gameCore_movePlayer(direction, self->m_scene->m_gameCore);
                     }
                 }
             }
