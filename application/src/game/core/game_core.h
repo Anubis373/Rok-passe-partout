@@ -83,25 +83,25 @@ enum Direction
 };
 
 
-GameCore* GameCore_init();
+GameCore* gameCore_init();
 
-Player* playerInit();
+Player* gameCore_playerInit();
 
-int** Board_create();
+int** gameCore_boardCreate();
 
-void Grid_Render(int** grid);
+void gameCore_gridRender(int** grid);
 
-void MovePlayer(int direction, GameCore* self);
+void gameCore_movePlayer(int direction, GameCore* self);
 
-void rotationDeplacement(Player* self, int direction);
+void gameCore_rotationDeplacement(Player* self, int direction);
 
-void rotationBouclier(Player* self, GameCore* core);
+void gameCore_rotationBouclier(Player* self, GameCore* core);
 
-bool rotationBouclierIsValid(Player* self, GameCore* core);
+bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core);
 
-bool tryMove(int direction, GameCore* self);
+bool gameCore_tryMove(int direction, GameCore* self);
 
-bool solution(Player* self, GameCore* core);
+bool gameCore_solution(Player* self, GameCore* core);
 
 bool gameCore_equals(GameCore* plateau1, GameCore* plateau2);
 
