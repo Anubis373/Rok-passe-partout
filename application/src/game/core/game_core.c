@@ -41,7 +41,7 @@ void gameCore_boardCreate(GameCore* self)
 }
 
 
-void gameCore_gridRender(int** board)
+void gameCore_gridRender(int board[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y])
 {
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {

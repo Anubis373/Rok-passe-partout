@@ -95,6 +95,8 @@ static void GameGraphics_updateCells(GameGraphics* self)
     float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / (GAME_GRID_SIZE_X + 1);
     float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / (GAME_GRID_SIZE_Y + 1);
 
+
+
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
     {
         for (int j = 0; j < GAME_GRID_SIZE_X; j++)
