@@ -41,6 +41,7 @@ typedef struct GameCore
     bool CleCollected;
     bool AxeCollected;
     bool crystalUnder;
+    bool axeUnder;
 } GameCore;
 
 typedef struct GameHashmapEntry

@@ -15,6 +15,7 @@ GameCore* gameCore_init()
     self->CleCollected = 0;
     self->AxeCollected = 0;
     self->crystalUnder = 0;
+    self->axeUnder = 0;
     return(self);
 }
 
@@ -57,7 +58,7 @@ void gameCore_gridRender(int** board)
 void gameCore_movePlayer(int direction, GameCore* self)
 {
     Vec2 PlayerPos = self->m_playerPosition;
-    if (self->board[(int)PlayerPos.x][(int)PlayerPos.y] != CRYSTAL)
+    if ((self->board[(int)PlayerPos.x][(int)PlayerPos.y] != CRYSTAL) && (self->board[(int)PlayerPos.x][(int)PlayerPos.y] != AXE))
     {
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)] = VOID;
     }
@@ -86,12 +87,19 @@ void gameCore_movePlayer(int direction, GameCore* self)
 }
 
 
+
+
 bool gameCore_tryMove(int direction, GameCore* self)
 {
     if (self->crystalUnder == true)
     {
         self->crystalUnder = false;
         self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y] = CRYSTAL;
+    }
+    if (self->axeUnder == true)
+    {
+        self->axeUnder = false;
+        self->board[(int)self->m_playerPosition.x][(int)self->m_playerPosition.y] = AXE;
     }
     switch (direction)
     {
@@ -115,15 +123,18 @@ bool gameCore_tryMove(int direction, GameCore* self)
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player.facePorte != CREUX_HACHE) return false;
-            self->AxeCollected = true;
-            for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+            if (self->player.facePorte == CREUX_HACHE)
             {
-                for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                self->AxeCollected = true;
+                for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
                 {
-                    if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                    {
+                        if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    }
                 }
             }
+            else self->axeUnder = true;
             return true;
         default:
             return true;
@@ -150,15 +161,18 @@ bool gameCore_tryMove(int direction, GameCore* self)
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player.faceOppPorte != CREUX_HACHE) return false;
-            self->AxeCollected = true;
-            for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+            if (self->player.faceOppPorte == CREUX_HACHE)
             {
-                for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                self->AxeCollected = true;
+                for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
                 {
-                    if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                    {
+                        if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    }
                 }
             }
+            else self->axeUnder = true;
             return true;
         default:
             return true;
@@ -183,15 +197,18 @@ bool gameCore_tryMove(int direction, GameCore* self)
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player.faceDroitePorte != CREUX_HACHE) return false;
-            self->AxeCollected = true;
-            for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+            if (self->player.faceDroitePorte == CREUX_HACHE)
             {
-                for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                self->AxeCollected = true;
+                for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
                 {
-                    if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                    {
+                        if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    }
                 }
             }
+            else self->axeUnder = true;
             return true;
         default:
             return true;
@@ -216,15 +233,18 @@ bool gameCore_tryMove(int direction, GameCore* self)
             self->CleCollected = true;
             return(true);
         case AXE:
-            if (self->player.faceGauchePorte != CREUX_HACHE) return false;
-            self->AxeCollected = true;
-            for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
+            if (self->player.faceGauchePorte == CREUX_HACHE)
             {
-                for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                self->AxeCollected = true;
+                for (int i = 0; i < GAME_GRID_SIZE_Y; i++)
                 {
-                    if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    for (int j = 0; j < GAME_GRID_SIZE_X; j++)
+                    {
+                        if (self->board[i][j] == MONSTER) self->board[i][j] = VOID;
+                    }
                 }
             }
+            else self->axeUnder = true;
             return true;
         default:
             return true;
