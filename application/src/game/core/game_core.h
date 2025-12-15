@@ -35,7 +35,7 @@ typedef struct Player
 
 typedef struct GameCore
 {
-    int board[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y];
+    int board[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y+1];
     Vec2 m_playerPosition;
     Player player;
     bool CleCollected;
@@ -110,7 +110,7 @@ void gameCore_rotationDeplacement(Player* self, int direction);
 
 void gameCore_rotationBouclier(Player* self, GameCore* core);
 
-bool gameCore_rotationBouclierIsValid(Player* self, GameCore* core);
+bool gameCore_rotationBouclierIsValid(Player self, GameCore* core);
 
 bool gameCore_tryMove(int direction, GameCore* self);
 

@@ -31,7 +31,7 @@ void gameCore_playerInit(GameCore* self)
 
 void gameCore_boardCreate(GameCore* self)
 {
-    self->board[0][0] = CRATE;
+    self->board[1][4] = CRATE;
     self->board[2][1] = PLAYER;
     self->board[0][3] = PILLAR;
     self->board[0][2] = KEY;
@@ -83,6 +83,8 @@ void gameCore_movePlayer(int direction, GameCore* self)
         self->board[(int)(PlayerPos.x)][(int)(PlayerPos.y)+1] = PLAYER;
         self->m_playerPosition = Vec2_add(PlayerPos, Vec2_up);
     }
+    gameCore_gridRender(self->board);
+    printf("%f %f\n", PlayerPos.x, PlayerPos.y);
     gameCore_solution(&self->player, self);
 }
 
@@ -355,6 +357,7 @@ GameHashmap* gamehashmap_Create(int capacity)
     assert(hashMap->m_entries);
     hashMap->m_size = 0;
     hashMap->m_idMap = calloc(capacity, sizeof(size_t));
+    AssertNew(hashMap->m_idMap);
     for (size_t i = 0; i < capacity; i++)
     {
         hashMap->m_idMap[i] = (size_t)-1;
