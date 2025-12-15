@@ -118,7 +118,7 @@ bool gameCore_solution(Player* self, GameCore* core);
 
 bool gameCore_equals(GameCore* plateau1, GameCore* plateau2);
 
-bool gameCore_hashContains(GameHashmap* map, GameCore* state);
+GameHashmapEntry* gameCore_hashGet(GameHashmap* map, GameCore* state);
 
 void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev);
 

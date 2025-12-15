@@ -410,28 +410,25 @@ bool gameCore_equals(GameCore* plateau1, GameCore* plateau2)
     return true;
 }
 
-bool gameCore_hashContains(GameHashmap* map, GameCore* state)
+GameHashmapEntry* gameCore_hashGet(GameHashmap* map, GameCore* state)
 {
-    //uint64_t hash = gameCore_hash(state);
-    //size_t idx = map->m_idMap[ hash % map->m_capacity ];
-    //GameHashmapEntry* entry = &map->m_entries[idx];
-    //while (entry->currState.player != NULL)
-    //{
-    //    if (!gameCore_equals(&entry->currState, state))
-    //    {
-    //        return(true);
-    //    }
-    //    idx = (idx + 1) % map->m_capacity;
-    //    entry = &map->m_entries[idx];
-    //}
-    //return false;
+    /*int64_t hash = gameCore_hash(state);
+    size_t idx = hash % map->m_capacity;
+    int i = 0;
+
+    while ()
+    {
+        if()
+        if (gameCore_equals(state, &(map->m_entries[i].currState)))
+    }*/
 }
 
 
 void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
 {
-    //uint64_t hash = gameCore_hash(&curr);
-    //size_t idx = hash % map->m_capacity;
+    uint64_t hash = gameCore_hash(&curr);
+    size_t idx = hash % map->m_capacity;
+
     //GameHashmapEntry* entry = &map->m_entries[idx];
     //while (entry->currState.player != NULL)
     //{
