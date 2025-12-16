@@ -444,6 +444,9 @@ void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev)
     //map->m_idMap[idx] = newEntry;
 }
 
+
+
+
 void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)     // Valide
 {
     receiver->AxeCollected = giver->AxeCollected;
@@ -455,7 +458,8 @@ void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)     // Valide
     gameCore_boardCopy(receiver->board, giver->board);
 }
 
-void gameCore_boardCopy(int** board1, int** board2)
+
+void gameCore_boardCopy(int board1[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y], int board2[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y])
 {
     for (int i = 0; i < GAME_GRID_SIZE_X; i++)
     {
@@ -466,56 +470,58 @@ void gameCore_boardCopy(int** board1, int** board2)
     }
 }
 
-void gameCore_resolution(GameCore* self)
-{
-    GameHashmap* hashmap = gamehashmap_Create(40000);
-    gameCore_hashInsert(hashmap, *self, *self);
-    SListNode* file = gameCore_FileCreate();
-    GameCore* previous = gameCore_init();
-    gameCore_FileInsert(file,self);
-    while (!gameCore_FileEmpty(file))
-    {
-        file = gameCore_FilePopFirst(file, &previous);
-        gameCore_gridRender(previous->board);
-        if (gameCore_solution(&previous->player, previous))
-        {
-            printf("Solution Found");
-        }
-        if (gameCore_tryMove(HAUT, previous))
-        {
-            GameCore* current = gameCore_init();
-            gameCore_CoreCopy(current, previous);
-            gameCore_movePlayer(HAUT, current);
-            gameCore_hashInsert(hashmap, *current, *previous);
-            if(!gameCore_hashContains(hashmap,current)) gameCore_FileInsert(file, current);
-        }
-        if (gameCore_tryMove(BAS, previous))
-        {
-            GameCore* current = gameCore_init();
-            gameCore_CoreCopy(current, previous);
-            gameCore_movePlayer(BAS, current);
-            gameCore_hashInsert(hashmap, *current, *previous);
-            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
-        }
-        if (gameCore_tryMove(GAUCHE, previous))
-        {
-            GameCore* current = gameCore_init();
-            gameCore_CoreCopy(current, previous);
-            gameCore_movePlayer(GAUCHE, current);
-            gameCore_hashInsert(hashmap, *current, *previous);
-            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
-        }
-        if (gameCore_tryMove(DROITE, previous))
-        {
-            GameCore* current = gameCore_init();
-            gameCore_CoreCopy(current, previous);
-            gameCore_movePlayer(DROITE, current);
-            gameCore_hashInsert(hashmap, *current, *previous);
-            if (!gameCore_hashContains(hashmap, current)) gameCore_FileInsert(file, current);
-        }
-    }
-    printf("No solution found");
-}
+
+//void gameCore_resolution(GameCore* self)
+//{
+//    GameHashmap* hashmap = gamehashmap_Create(40000);
+//    gameCore_hashInsert(hashmap, *self, *self);
+//    SListNode* file = gameCore_FileCreate();
+//    GameCore* previous = gameCore_init();
+//    gameCore_FileInsert(file,self);
+//    while (!gameCore_FileEmpty(file))
+//    {
+//        file = gameCore_FilePopFirst(file, &previous);
+//        gameCore_gridRender(previous->board);
+//        if (gameCore_solution(&previous->player, previous))
+//        {
+//            printf("Solution Found");
+//        }
+//        if (gameCore_tryMove(HAUT, previous))
+//        {
+//            GameCore* current = gameCore_init();
+//            gameCore_CoreCopy(current, previous);
+//            gameCore_movePlayer(HAUT, current);
+//            gameCore_hashInsert(hashmap, *current, *previous);
+//            if(!gameCore_hashGet(hashmap,current)) gameCore_FileInsert(file, current);
+//        }
+//        if (gameCore_tryMove(BAS, previous))
+//        {
+//            GameCore* current = gameCore_init();
+//            gameCore_CoreCopy(current, previous);
+//            gameCore_movePlayer(BAS, current);
+//            gameCore_hashInsert(hashmap, *current, *previous);
+//            if (!gameCore_hashGet(hashmap, current)) gameCore_FileInsert(file, current);
+//        }
+//        if (gameCore_tryMove(GAUCHE, previous))
+//        {
+//            GameCore* current = gameCore_init();
+//            gameCore_CoreCopy(current, previous);
+//            gameCore_movePlayer(GAUCHE, current);
+//            gameCore_hashInsert(hashmap, *current, *previous);
+//            if (!gameCore_hashGet(hashmap, current)) gameCore_FileInsert(file, current);
+//        }
+//        if (gameCore_tryMove(DROITE, previous))
+//        {
+//            GameCore* current = gameCore_init();
+//            gameCore_CoreCopy(current, previous);
+//            gameCore_movePlayer(DROITE, current);
+//            gameCore_hashInsert(hashmap, *current, *previous);
+//            if (!gameCore_hashGet(hashmap, current)) gameCore_FileInsert(file, current);
+//        }
+//    }
+//    printf("No solution found");
+//}
+
 
 SListNode* gameCore_FileCreate()        // Valide
 {
@@ -573,3 +579,5 @@ bool gameCore_FileEmpty(SListNode* file)        // Valide
     if (!file->core && !file->next) return(true);
     return(false);
 }
+
+
