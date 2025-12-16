@@ -40,12 +40,14 @@ GameGraphics* GameGraphics_create(Scene* scene)
     SpriteSheet* crystalSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_CRYSTAL);
     SpriteSheet* demonSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_DEMON);
     SpriteSheet* keySpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_KEY);
+    SpriteSheet* axeSpriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_AXE);
     AssertNew(spriteSheet);
     AssertNew(crateSpriteSheet);
     AssertNew(pillarSpriteSheet);
     AssertNew(crystalSpriteSheet);
     AssertNew(demonSpriteSheet);
     AssertNew(keySpriteSheet);
+    AssertNew(axeSpriteSheet);
     self->m_spritePlayerTop = SpriteSheet_getGroupByName(spriteSheet, "top");
     self->m_spritePlayerBotKey = SpriteSheet_getGroupByName(spriteSheet, "bot_key");
     self->m_spritePlayerBotNoKey = SpriteSheet_getGroupByName(spriteSheet, "bot_no_key");
@@ -60,6 +62,7 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_spriteCrystal = SpriteSheet_getGroupByName(crystalSpriteSheet, "crystal");
     self->m_spriteDemon = SpriteSheet_getGroupByName(demonSpriteSheet, "demon");
     self->m_spriteKey = SpriteSheet_getGroupByName(keySpriteSheet, "key");
+    self->m_spriteAxe = SpriteSheet_getGroupByName(axeSpriteSheet, "axe");
     AssertNew(self->m_spritePlayerTop);
     AssertNew(self->m_spritePlayerBotKey);
     AssertNew(self->m_spritePlayerBotNoKey);
@@ -74,6 +77,7 @@ GameGraphics* GameGraphics_create(Scene* scene)
     AssertNew(self->m_spriteCrystal);
     AssertNew(self->m_spriteDemon);
     AssertNew(self->m_spriteKey);
+    AssertNew(self->m_spriteAxe);
     return self;
 }
 
@@ -229,6 +233,9 @@ void GameGraphics_render(GameGraphics* self)
                 break;
             case KEY:
                 SpriteGroup_render(self->m_spriteKey, 0, &rect, Vec2_anchor_north_west, 1.0f);
+                break;
+            case AXE:
+                SpriteGroup_render(self->m_spriteAxe, 0, &rect, Vec2_anchor_north_west, 1.0f);
                 break;
             case PLAYER:
                 switch (self->m_scene->m_gameCore->player.faceCiel)

@@ -17,6 +17,7 @@ typedef enum SpriteID
     SPRITE_CRYSTAL,
     SPRITE_DEMON,
     SPRITE_KEY,
+    SPRITE_AXE,
     //
     SPRITE_COUNT,
 } SpriteID;
