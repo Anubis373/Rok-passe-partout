@@ -1,0 +1,9 @@
+{
+    "pixelArt": true,
+    "rectangles": [
+    {"x":  0, "y":  0, "w": 1280, "h": 1280}
+    ],
+    "groups": [
+    {"name": "axe", "frames": [0]}
+    ]
+}

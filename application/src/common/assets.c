@@ -35,6 +35,10 @@ void Game_addAssets(AssetManager* assets)
         assets, SPRITE_KEY, "atlas/key", "atlas/key_desc"
     );
 
+    AssetManager_addSpriteSheet(
+        assets, SPRITE_AXE, "atlas/axe", "atlas/axe_desc"
+    );
+
     // -------------------------------------------------------------------------
     // Fonts
 

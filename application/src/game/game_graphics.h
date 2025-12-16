@@ -38,6 +38,7 @@ typedef struct GameGraphics
     SpriteGroup* m_spritePlayerShield;
     SpriteGroup* m_spritePlayerSideAxe;
     SpriteGroup* m_spritePlayerSideNoAxe;
+    SpriteGroup* m_spriteAxe;
 
 
 
