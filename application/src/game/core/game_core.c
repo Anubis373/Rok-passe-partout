@@ -325,9 +325,6 @@ void gameCore_rotationBouclier(Player* self, GameCore* core)
         self->faceOppPorte = self->faceDroitePorte;
         self->faceDroitePorte = tmp;
     }
-    printf("%d\n", self->facePorte);
-    printf("%d %d %d\n", self->faceGauchePorte, self->faceCiel, self->faceDroitePorte);
-    printf("%d\n", self->faceOppPorte);
 }
 
 bool gameCore_solution(Player* self, GameCore* core)
@@ -410,7 +407,7 @@ bool gameCore_equals(GameCore* plateau1, GameCore* plateau2)
     return true;
 }
 
-GameHashmapEntry* gameCore_hashGet(GameHashmap* map, GameCore* state)
+bool gameCore_hashContains(GameHashmap* map, GameCore* state)
 {
     uint64_t hash = gameCore_hash(state);
     size_t idx = hash % map->m_capacity;
