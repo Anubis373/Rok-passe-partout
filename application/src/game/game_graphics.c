@@ -19,19 +19,23 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_scene = scene;
     self->m_padding = Vec2_set(0.0f, 0.0f);
     self->m_spacing = Vec2_set(0.1f, 0.1f);
-    //
+    
     self->m_rotationGrid.lower = Vec2_add(Vec2_set(-6.f, -4.f), Vec2_set(16.0f, 4.5f));
     self->m_rotationGrid.upper = Vec2_add(Vec2_set(6.f, 4.f), Vec2_set(16.0f, 4.5f));
     self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(6.0f, 4.5f));
     self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(6.0f, 4.5f));
-    //
+
+    self->m_victoryTriggered = false;
+
     self->m_enabled = false;
 
-    // Initialiser la position sélectionnée avec la position du joueur
+
     Vec2 playerPos = scene->m_gameCore->m_playerPosition;
     self->m_selectedRowIndex = (int)playerPos.x;
     self->m_selectedColIndex = (int)playerPos.y;
-    //
+
+    self->m_victoryTriggered = false;
+
 
     AssetManager* assets = Scene_getAssetManager(scene);
     SpriteSheet* spriteSheet = AssetManager_getSpriteSheet(assets, SPRITE_PLAYER);
@@ -87,7 +91,7 @@ void GameGraphics_destroy(GameGraphics* self)
     free(self);
 }
 
-//
+
 static void GameGraphics_updateCells(GameGraphics* self)
 {
     float totalPaddingX = self->m_padding.x * 2.f;
@@ -122,7 +126,8 @@ static void GameGraphics_updateCells(GameGraphics* self)
         }
     }
 }
-//
+
+
 
 
 void GameGraphics_update(GameGraphics* self)
@@ -139,6 +144,20 @@ void GameGraphics_update(GameGraphics* self)
 
     if (self->m_enabled == false)
     {
+        return;
+    }
+
+    if (self->m_victoryTriggered)
+    {
+        if (input->mouse.leftPressed)
+        {
+            exit(0);  // Ou utilisez votre fonction pour retourner au menu
+        }
+        return;
+    }
+    if (gameCore_solution(&self->m_scene->m_gameCore->player, self->m_scene->m_gameCore))
+    {
+        self->m_victoryTriggered = true;
         return;
     }
 
@@ -510,6 +529,173 @@ void GameGraphics_render(GameGraphics* self)
                         break;
                     }
             }
+        }
+    }
+    if (self->m_victoryTriggered)
+    {
+        int screenWidth = Camera_getWidth(camera);
+        int screenHeight = Camera_getHeight(camera);
+        // Fond noir sur tout l'écran
+        SDL_FRect fullScreen;
+        fullScreen.x = 0.0f;
+        fullScreen.y = 0.0f;
+        fullScreen.w = (float)screenWidth;
+        fullScreen.h = (float)screenHeight;
+        SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 220);
+        SDL_RenderFillRect(g_renderer, &fullScreen);
+        // Grande boîte centrale
+        float boxW = 600.0f;
+        float boxH = 400.0f;
+        SDL_FRect box;
+        box.x = screenWidth / 2.0f - boxW / 2.0f;
+        box.y = screenHeight / 2.0f - boxH / 2.0f;
+        box.w = boxW;
+        box.h = boxH;
+        SDL_SetRenderDrawColor(g_renderer, 20, 60, 30, 255);
+        SDL_RenderFillRect(g_renderer, &box);
+        
+        for (int i = 0; i < 8; i++)
+        {
+            SDL_FRect border;
+            border.x = box.x - i;
+            border.y = box.y - i;
+            border.w = box.w + (i * 2);
+            border.h = box.h + (i * 2);
+            SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+            SDL_RenderRect(g_renderer, &border);
+        }
+        // GRAND "V" stylisé (Victory)
+        SDL_FRect vLeft;
+        vLeft.x = screenWidth / 2.0f - 120.0f;
+        vLeft.y = screenHeight / 2.0f - 100.0f;
+        vLeft.w = 40.0f;
+        vLeft.h = 120.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+        SDL_RenderFillRect(g_renderer, &vLeft);
+        SDL_FRect vRight;
+        vRight.x = screenWidth / 2.0f + 80.0f;
+        vRight.y = screenHeight / 2.0f - 100.0f;
+        vRight.w = 40.0f;
+        vRight.h = 120.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+        SDL_RenderFillRect(g_renderer, &vRight);
+        SDL_FRect vBottom;
+        vBottom.x = screenWidth / 2.0f - 80.0f;
+        vBottom.y = screenHeight / 2.0f;
+        vBottom.w = 160.0f;
+        vBottom.h = 40.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+        SDL_RenderFillRect(g_renderer, &vBottom);
+        // Petit point central pour compléter le V
+        SDL_FRect vCenter;
+        vCenter.x = screenWidth / 2.0f - 20.0f;
+        vCenter.y = screenHeight / 2.0f + 20.0f;
+        vCenter.w = 40.0f;
+        vCenter.h = 60.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+        SDL_RenderFillRect(g_renderer, &vCenter);
+
+        //Particules
+        // Ligne du haut
+        for (int i = 0; i < 15; i++)
+        {
+            float particleX = box.x + 40.0f + (i * 37.0f);
+            float particleY = box.y + 20.0f + ((i % 3) * 10.0f);
+            SDL_FRect particle;
+            particle.x = particleX;
+            particle.y = particleY;
+            particle.w = 10.0f;
+            particle.h = 10.0f;
+
+            if (i % 3 == 0) SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+            else if (i % 3 == 1) SDL_SetRenderDrawColor(g_renderer, 255, 255, 150, 255);
+            else SDL_SetRenderDrawColor(g_renderer, 255, 150, 150, 255);
+            SDL_RenderFillRect(g_renderer, &particle);
+        }
+
+        // Ligne du bas
+        for (int i = 0; i < 15; i++)
+        {
+            float particleX = box.x + 40.0f + (i * 37.0f);
+            float particleY = box.y + boxH - 35.0f + ((i % 3) * 10.0f);
+            SDL_FRect particle;
+            particle.x = particleX;
+            particle.y = particleY;
+            particle.w = 10.0f;
+            particle.h = 10.0f;
+
+            if (i % 3 == 0) SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+            else if (i % 3 == 1) SDL_SetRenderDrawColor(g_renderer, 150, 255, 150, 255);
+            else SDL_SetRenderDrawColor(g_renderer, 150, 200, 255, 255);
+            SDL_RenderFillRect(g_renderer, &particle);
+        }
+
+        // 4 étoiles à chaque coin
+        SDL_FRect star1;
+        star1.x = box.x + 30.0f;
+        star1.y = box.y + 70.0f;
+        star1.w = 20.0f;
+        star1.h = 20.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 255, 100, 255);
+        SDL_RenderFillRect(g_renderer, &star1);
+
+        SDL_FRect star2;
+        star2.x = box.x + boxW - 50.0f;
+        star2.y = box.y + 70.0f;
+        star2.w = 20.0f;
+        star2.h = 20.0f;
+        SDL_SetRenderDrawColor(g_renderer, 255, 215, 0, 255);
+        SDL_RenderFillRect(g_renderer, &star2);
+
+        SDL_FRect star3;
+        star3.x = box.x + 30.0f;
+        star3.y = box.y + boxH - 90.0f;
+        star3.w = 20.0f;
+        star3.h = 20.0f;
+        SDL_SetRenderDrawColor(g_renderer, 150, 255, 200, 255);
+        SDL_RenderFillRect(g_renderer, &star3);
+
+        SDL_FRect star4;
+        star4.x = box.x + boxW - 50.0f;
+        star4.y = box.y + boxH - 90.0f;
+        star4.w = 20.0f;
+        star4.h = 20.0f;
+        SDL_SetRenderDrawColor(g_renderer, 200, 150, 255, 255);
+        SDL_RenderFillRect(g_renderer, &star4);
+
+        // Particules en guirlande - 3 colonnes à gauche et 3 à droite
+        for (int i = 0; i < 18; i++)
+        {
+            SDL_FRect particle;
+
+            if (i < 9)
+            {
+                int col = i % 3;
+                int row = i / 3;
+
+                particle.x = box.x + 40.0f + (col * 35.0f);
+                particle.y = box.y + 120.0f + (row * 70.0f) + ((col % 2) * 20.0f);
+            }
+            else
+            {
+                int col = (i - 9) % 3;
+                int row = (i - 9) / 3;
+
+                particle.x = box.x + boxW - 140.0f + (col * 35.0f);
+                particle.y = box.y + 120.0f + (row * 70.0f) + (((col + 1) % 2) * 20.0f);
+            }
+
+            
+            particle.w = 7;
+            particle.h = 7;
+
+            if (i % 5 == 0) SDL_SetRenderDrawColor(g_renderer, 255, 255, 200, 255);
+            else if (i % 5 == 1) SDL_SetRenderDrawColor(g_renderer, 255, 200, 200, 255);
+            else if (i % 5 == 2) SDL_SetRenderDrawColor(g_renderer, 200, 255, 200, 255);
+            else if (i % 5 == 3) SDL_SetRenderDrawColor(g_renderer, 200, 220, 255, 255);
+            else SDL_SetRenderDrawColor(g_renderer, 255, 220, 150, 255);
+
+            SDL_RenderFillRect(g_renderer, &particle);
         }
     }
 }

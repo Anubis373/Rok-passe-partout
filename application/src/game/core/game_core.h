@@ -35,7 +35,7 @@ typedef struct Player
 
 typedef struct GameCore
 {
-    int board[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y+1];
+    int board[4][5];
     Vec2 m_playerPosition;
     Player player;
     bool CleCollected;
