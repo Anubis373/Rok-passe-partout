@@ -10,7 +10,7 @@ GameCore* gameCore_init()
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
     AssertNew(self);
     gameCore_boardCreate(self);
-    self->m_playerPosition = Vec2_set(0, 1);
+    self->m_playerPosition = Vec2_set(2, 1);
     gameCore_playerInit(self);
     self->CleCollected = 0;
     self->AxeCollected = 0;
@@ -22,16 +22,16 @@ GameCore* gameCore_init()
 void gameCore_playerInit(GameCore* self)
 {
     self->player.facePorte = VISAGE;
-    self->player.faceCiel = /*(TETE)*/BOUCLIER;
+    self->player.faceCiel = TETE;
     self->player.faceOppPorte = DOS;
-    self->player.faceTerre = /*(CREUX_CLE)*/CREUX_HACHE;
-    self->player.faceGauchePorte = /*(CREUX_HACHE)*/TETE;
-    self->player.faceDroitePorte = /*(BOUCLIER)*/CREUX_CLE;
+    self->player.faceTerre = CREUX_CLE;
+    self->player.faceGauchePorte = CREUX_HACHE;
+    self->player.faceDroitePorte = BOUCLIER;
 }
 
 void gameCore_boardCreate(GameCore* self)
 {
-    self->board[0][1] = PLAYER;
+    self->board[2][1] = PLAYER;
     self->board[0][2] = KEY;
     self->board[3][3] = MONSTER;
     self->board[2][0] = AXE;

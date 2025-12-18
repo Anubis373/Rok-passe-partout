@@ -25,8 +25,6 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_gridAABB.lower = Vec2_add(Vec2_set(-5.f, -4.f), Vec2_set(6.0f, 4.5f));
     self->m_gridAABB.upper = Vec2_add(Vec2_set(+5.f, +4.f), Vec2_set(6.0f, 4.5f));
 
-    self->m_victoryTriggered = false;
-
     self->m_enabled = false;
 
 
@@ -34,7 +32,7 @@ GameGraphics* GameGraphics_create(Scene* scene)
     self->m_selectedRowIndex = (int)playerPos.x;
     self->m_selectedColIndex = (int)playerPos.y;
 
-    self->m_victoryTriggered = false;
+    self->m_victoryGraphics = false;
 
 
     AssetManager* assets = Scene_getAssetManager(scene);
@@ -147,7 +145,7 @@ void GameGraphics_update(GameGraphics* self)
         return;
     }
 
-    if (self->m_victoryTriggered)
+    if (self->m_victoryGraphics)
     {
         if (input->mouse.leftPressed)
         {
@@ -157,7 +155,7 @@ void GameGraphics_update(GameGraphics* self)
     }
     if (gameCore_solution(&self->m_scene->m_gameCore->player, self->m_scene->m_gameCore))
     {
-        self->m_victoryTriggered = true;
+        self->m_victoryGraphics = true;
         return;
     }
 
@@ -232,7 +230,16 @@ void GameGraphics_render(GameGraphics* self)
             rect.h = (cellAABB->upper.y - cellAABB->lower.y) * scale;
             bool isSelected = (i == self->m_selectedRowIndex && j == self->m_selectedColIndex);
 
-            SDL_Color color = isSelected ? g_colors.orange9 : g_colors.gray8;
+            SDL_Color color;
+            if (i == 0 && j == 2)
+            {
+                color = g_colors.green7;
+            }
+            else
+            {
+                color = isSelected ? g_colors.orange9 : g_colors.gray8;
+            }
+
             SDL_SetRenderDrawColor(g_renderer, color.r, color.g, color.b, 255);
             SDL_RenderFillRect(g_renderer, &rect);
 
@@ -531,7 +538,7 @@ void GameGraphics_render(GameGraphics* self)
             }
         }
     }
-    if (self->m_victoryTriggered)
+    if (self->m_victoryGraphics)
     {
         int screenWidth = Camera_getWidth(camera);
         int screenHeight = Camera_getHeight(camera);

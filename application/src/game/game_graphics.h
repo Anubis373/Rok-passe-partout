@@ -49,7 +49,7 @@ typedef struct GameGraphics
     SpriteGroup* m_spriteKey;
 
     bool m_enabled;
-    bool m_victoryTriggered;
+    bool m_victoryGraphics;
 } GameGraphics;
 
 GameGraphics* GameGraphics_create(Scene* scene);
