@@ -326,9 +326,6 @@ void gameCore_rotationBouclier(Player* self, GameCore* core)
         self->faceOppPorte = self->faceDroitePorte;
         self->faceDroitePorte = tmp;
     }
-    printf("%d\n", self->facePorte);
-    printf("%d %d %d\n", self->faceGauchePorte, self->faceCiel, self->faceDroitePorte);
-    printf("%d\n", self->faceOppPorte);
 }
 
 bool gameCore_solution(Player* self, GameCore* core)
@@ -339,7 +336,6 @@ bool gameCore_solution(Player* self, GameCore* core)
         return false;
     if (!core->CleCollected)
         return false;
-    printf("GAGNE, WOHOOOO");
     return true;
     
 }
@@ -463,7 +459,8 @@ void gameCore_CoreCopy(GameCore* receiver, GameCore* giver)
     gameCore_boardCopy(receiver->board, giver->board);
 }
 
-void gameCore_boardCopy(int** board1, int** board2)
+
+void gameCore_boardCopy(int board1[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y], int board2[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y])
 {
     board1 = board2;
 }
