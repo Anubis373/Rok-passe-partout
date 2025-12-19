@@ -98,7 +98,9 @@ static void GameGraphics_updateCells(GameGraphics* self)
     Vec2 rotationGridSize = AABB_getSize(&(self->m_rotationGrid));
     float cellW = (gridSize.x - totalPaddingX - totalSpacingX) / (GAME_GRID_SIZE_X + 1);
     float cellH = (gridSize.y - totalPaddingY - totalSpacingY) / (GAME_GRID_SIZE_Y + 1);
-
+    Vec2 playerPos = self->m_scene->m_gameCore->m_playerPosition;
+    self->m_selectedRowIndex = (int)playerPos.x;
+    self->m_selectedColIndex = (int)playerPos.y;
 
 
     for (int i = 0; i < GAME_GRID_SIZE_Y; i++)

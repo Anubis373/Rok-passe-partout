@@ -9,7 +9,7 @@ GameCore* gameCore_init()
 {
     GameCore* self = (GameCore*)calloc(1, sizeof(GameCore));
     AssertNew(self);
-    gameCore_boardCreate(self);
+    GameCore_generateBoard(self);
     self->m_playerPosition = Vec2_set(2, 1);
     gameCore_playerInit(self);
     self->CleCollected = 0;
@@ -33,6 +33,7 @@ void gameCore_boardCreate(GameCore* self)
 {
     self->board[2][1] = PLAYER;
     self->board[0][2] = KEY;
+    self->board[0][0] = CRATE;
     self->board[3][3] = MONSTER;
     self->board[2][0] = AXE;
 }
@@ -354,13 +355,20 @@ GameHashmap* gamehashmap_Create(int capacity)
     assert(hashMap->m_entries);
     hashMap->m_size = 0;
     hashMap->m_idMap = calloc(capacity, sizeof(size_t));
-    AssertNew(hashMap->m_idMap);
+    assert(hashMap->m_idMap);
     for (size_t i = 0; i < capacity; i++)
     {
         hashMap->m_idMap[i] = (size_t)-1;
     }
 
     return hashMap;
+}
+
+void gameCore_GameHashMapDestroy(GameHashmap* self)
+{
+    free(self->m_entries);
+    free(self->m_idMap);
+    free(self);
 }
 
 GameHashmapEntry *GameHashmapEntry_Create(GameCore currState, GameCore prevState)
@@ -460,20 +468,34 @@ void gameCore_boardCopy(int** board1, int** board2)
     board1 = board2;
 }
 
-void gameCore_resolution(GameCore* self)
+bool gameCore_resolution(GameCore* self)
 {
     GameHashmap* hashmap = gamehashmap_Create(40000);
+    AssertNew(hashmap);
     gameCore_hashInsert(hashmap, *self, *self);
     SListNode* file = gameCore_FileCreate();
+    AssertNew(file);
     GameCore* previous = gameCore_init();
     gameCore_FileInsert(file,self);
     while (!gameCore_FileEmpty(file))
     {
         file = gameCore_FilePopFirst(file, &previous);
-        if (gameCore_solution(&previous->player, &previous))
+        if (gameCore_solution(&previous->player, previous))
         {
-            printf("Solution Found");
-            break;
+            printf("\nSolution Found");
+            gameCore_GameHashMapDestroy(hashmap);
+            return true;
+        }
+        if (gameCore_rotationBouclierIsValid(previous->player, &previous))
+        {
+            GameCore* current = gameCore_init();
+            gameCore_CoreCopy(current, previous);
+            gameCore_rotationBouclier(&current->player, current);
+            if (!gameCore_hashContains(hashmap, current))
+            {
+                gameCore_FileInsert(file, current);
+                gameCore_hashInsert(hashmap, *current, *previous);
+            }
         }
         if (gameCore_tryMove(HAUT, previous))
         {
@@ -521,7 +543,8 @@ void gameCore_resolution(GameCore* self)
             }
         }
     }
-    printf("No solution found");
+    gameCore_GameHashMapDestroy(hashmap);
+    return(false);
 }
 
 SListNode* gameCore_FileCreate()        // Valide
@@ -579,4 +602,62 @@ bool gameCore_FileEmpty(SListNode* file)        // Valide
     if (!file) return true;
     if (!file->core && !file->next) return(true);
     return(false);
+}
+
+void GameCore_generateBoard(GameCore* self)
+{
+    int copy[GAME_GRID_SIZE_X][GAME_GRID_SIZE_Y+1];
+    bool solvable = false;
+    while (solvable == false)
+    {
+        int crateNum = (rand() % 2) + 1;
+        int PillarNum = (rand() % 2) + 1;
+        int crystalNum = (rand() % 2) + 1;
+        int monster = rand() % 2;
+        for (int i = 0; i < GAME_GRID_SIZE_X; i++)
+        {
+            for (int j = 0; j < (GAME_GRID_SIZE_Y + 1); j++)
+            {
+                self->board[i][j] = VOID;
+            }
+        }
+        int x = rand() % GAME_GRID_SIZE_X;
+        int y = rand() % (GAME_GRID_SIZE_Y + 1);
+        self->board[x][y] = PLAYER;
+        self->m_playerPosition = Vec2_set(x, y);
+        printf("%d %d\n%d %d", x, y, (int)self->m_playerPosition.x, (int)self->m_playerPosition.y);
+        for (int i = 0; i < crateNum; i++)
+        {
+             x = rand() % GAME_GRID_SIZE_X;
+             y = rand() % (GAME_GRID_SIZE_Y + 1);
+            if (self->board[x][y] == VOID) self->board[x][y] = CRATE;
+        }
+        for (int i = 0; i < PillarNum; i++)
+        {
+             x = rand() % GAME_GRID_SIZE_X;
+             y = rand() % (GAME_GRID_SIZE_Y + 1);
+            if (self->board[x][y] == VOID) self->board[x][y] = PILLAR;
+        }
+        for (int i = 0; i < crystalNum; i++)
+        {
+             x = rand() % GAME_GRID_SIZE_X;
+             y = rand() % (GAME_GRID_SIZE_Y + 1);
+            if (self->board[x][y] == VOID) self->board[x][y] = CRYSTAL;
+        }
+        if (monster == 1)
+        {
+             x = rand() % GAME_GRID_SIZE_X;
+             y = rand() % (GAME_GRID_SIZE_Y + 1);
+            if (self->board[x][y] == VOID) self->board[x][y] = MONSTER;
+            x = rand() % GAME_GRID_SIZE_X;
+            y = rand() % (GAME_GRID_SIZE_Y + 1);
+            if (self->board[x][y] == VOID) self->board[x][y] = AXE;
+        }
+         x = rand() % GAME_GRID_SIZE_X;
+         y = rand() % (GAME_GRID_SIZE_Y + 1);
+        if (self->board[x][y] == VOID) self->board[x][y] = KEY;
+        memcpy(copy, self->board, sizeof(self->board));
+//        solvable = gameCore_resolution(self);
+        solvable = true;
+    }
 }

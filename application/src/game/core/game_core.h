@@ -122,7 +122,7 @@ bool gameCore_hashContains(GameHashmap* map, GameCore* state);
 
 void gameCore_hashInsert(GameHashmap* map, GameCore curr, GameCore prev);
 
-void gameCore_resolution(GameCore* self);
+bool gameCore_resolution(GameCore* self);
 
 SListNode* gameCore_FileCreate();
 
@@ -135,3 +135,5 @@ SListNode* gameCore_FilePopFirst(SListNode* file, GameCore** core);
 bool gameCore_FileEmpty(SListNode* file);
 
 void gameCore_boardCopy(int** receiver , int** giver);
+
+void GameCore_generateBoard(GameCore* self);
